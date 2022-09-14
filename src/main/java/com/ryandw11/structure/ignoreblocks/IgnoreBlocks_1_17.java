@@ -2,17 +2,14 @@ package com.ryandw11.structure.ignoreblocks;
 
 import org.bukkit.Material;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Ignore blocks for 1.17 - 1.18
  */
 public class IgnoreBlocks_1_17 implements IgnoreBlocks {
 
-    private final List<Material> plantBlocks = Collections.unmodifiableList(new ArrayList<>(Arrays.asList(
+    private final EnumSet<Material> plantBlocks = EnumSet.of(
             // General BLocks
             Material.SNOW,
             // Grasses
@@ -73,7 +70,6 @@ public class IgnoreBlocks_1_17 implements IgnoreBlocks {
             Material.CRIMSON_FUNGUS,
             Material.WARPED_FUNGUS,
             Material.LILAC,
-            Material.ROSE_BUSH,
             Material.PEONY,
             // Coral
             Material.TUBE_CORAL,
@@ -107,10 +103,10 @@ public class IgnoreBlocks_1_17 implements IgnoreBlocks {
             Material.MEDIUM_AMETHYST_BUD,
             Material.LARGE_AMETHYST_BUD,
             Material.AMETHYST_CLUSTER
-    )));
+    );
 
     @Override
-    public List<Material> getBlocks() {
+    public EnumSet<Material> getBlocks() {
         return plantBlocks;
     }
 }

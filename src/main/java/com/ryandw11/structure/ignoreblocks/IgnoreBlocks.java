@@ -2,8 +2,8 @@ package com.ryandw11.structure.ignoreblocks;
 
 import org.bukkit.Material;
 
-import java.util.List;
+import java.util.EnumSet;
 
 public interface IgnoreBlocks {
-    List<Material> getBlocks();
+    EnumSet<Material> getBlocks();
 }
