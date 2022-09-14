@@ -19,8 +19,8 @@ public interface BottomFill {
      *
      * @param structure     The structure that was spawned.
      * @param spawnLocation The spawn (paste) location of the structure.
-     * @param minLoc        The minimum location of the structure schem.
-     * @param maxLoc        The maximum location of the structure schem.
+     * @param minLoc        The minimum location of the structure in the world to paste onto.
+     * @param maxLoc        The maximum location of the structure in the world to paste onto.
      */
     void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) throws IOException;
 }
