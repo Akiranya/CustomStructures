@@ -64,7 +64,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
             var clipboardMinY = clipboard.getMinimumPoint().getBlockY();
             for (int x = clipboard.getMinimumPoint().getBlockX(); x <= clipboard.getMaximumPoint().getBlockX(); x++) {
                 for (int z = clipboard.getMinimumPoint().getBlockZ(); z <= clipboard.getMaximumPoint().getBlockZ(); z++) {
-                    if (!clipboard.getBlock(BlockVector3.at(x, clipboardMinY, z)).getBlockType().getMaterial().isAir()) {
+                    if (clipboard.getBlock(BlockVector3.at(x, clipboardMinY, z)).getBlockType().getMaterial().isMovementBlocker()) {
                         BlockVector2 groundPoint = BlockVector3.at(x, clipboardMinY, z)
                                 // Get relative location for moving to new coordinate system
                                 .subtract(clipboard.getMinimumPoint())
@@ -100,11 +100,11 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
             var z = groundPoint.getBlockZ();
 
             boolean shouldFill =
-                    // If the block is not empty
+                    // If the block is empty
                     world.getBlockAt(x, y, z).isEmpty()
-                    // The block is not in the list of ignore blocks.
+                    // The block is in the list of ignore blocks.
                     || CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType())
-                    // It is not water (if it is set to be ignored)
+                    // It is water (if it is set to be ignored)
                     || (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
 
             if (!shouldFill) {
