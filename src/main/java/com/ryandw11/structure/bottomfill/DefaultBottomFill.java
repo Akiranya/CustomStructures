@@ -27,13 +27,16 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
 
     private Structure structure;
     private Location spawnLocation;
-    private int minY;
     private Queue<BlockVector2> groundPlane;
+    private int minY;
+    private Material fillMaterial;
 
     @Override
     public void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) throws IOException {
-        if (structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome()).isEmpty())
-            return;
+        var fillMaterial = structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome());
+        if (fillMaterial.isPresent()) {
+            this.fillMaterial = fillMaterial.get();
+        } else return;
 
         this.structure = structure;
         this.spawnLocation = spawnLocation;
@@ -111,10 +114,8 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
                 break;
             }
 
-            if (structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome()).isPresent()) {
-                world.getBlockAt(x, y, z).setType(structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome()).get());
-                y--;
-            }
+            world.getBlockAt(x, y, z).setType(fillMaterial);
+            y--;
         }
     }
 
