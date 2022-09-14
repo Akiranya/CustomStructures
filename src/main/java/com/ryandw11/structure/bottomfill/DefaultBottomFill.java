@@ -98,16 +98,15 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
         }
 
         var y = minY - 1;
+        var x = groundPoint.getBlockX();
+        var z = groundPoint.getBlockZ();
         for (int i = 0; i < 32; i++) {
-            var x = groundPoint.getBlockX();
-            var z = groundPoint.getBlockZ();
-
             boolean shouldFill =
                     // If the block is empty
                     world.getBlockAt(x, y, z).isEmpty()
-                    // The block is in the list of ignore blocks.
+                    // If the block is in the list of ignore blocks.
                     || CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType())
-                    // It is water (if it is set to be ignored)
+                    // If it is water (if it is set to be ignored)
                     || (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
 
             if (!shouldFill) {
