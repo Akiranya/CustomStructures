@@ -60,7 +60,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
             Clipboard clipboard = reader.read();
 
-            // ? The minimum point of a region is the lowest abs point in the original world
+            // Note: The minimum point of a region is the lowest abs point in the original world
 
             var minX = minLoc.getBlockX();
             var minZ = minLoc.getBlockZ();
@@ -88,33 +88,33 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
         var world = spawnLocation.getWorld();
         Preconditions.checkNotNull(world, "world");
 
-        // First pick a ground point, then
-        // fill the bottom down to 32 blocks
-
-        var groundPoint = groundPlane.poll();
-        if (groundPoint == null) {
-            cancel();
-            return;
-        }
-
-        var y = minY - 1;
-        var x = groundPoint.getBlockX();
-        var z = groundPoint.getBlockZ();
-        for (int i = 0; i < 32; i++) {
-            boolean shouldFill =
-                    // If the block is empty
-                    world.getBlockAt(x, y, z).isEmpty()
-                    // If the block is in the list of ignore blocks.
-                    || CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType())
-                    // If it is water (if it is set to be ignored)
-                    || (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
-
-            if (!shouldFill) {
-                break;
+        // First pick 8 ground points
+        for (int i = 0; i < 8; i++) {
+            var groundPoint = groundPlane.poll();
+            if (groundPoint == null) {
+                cancel();
+                return;
             }
 
-            world.getBlockAt(x, y, z).setType(fillMaterial);
-            y--;
+            // Then fill the bottom space of the 8 ground points down to 32 blocks
+            var y = minY - 1;
+            var x = groundPoint.getBlockX();
+            var z = groundPoint.getBlockZ();
+            for (int j = 0; j < 32; j++) {
+                boolean shouldFill =
+                        // If the block is empty
+                        world.getBlockAt(x, y, z).isEmpty()
+                        // If the block is in the list of ignore blocks.
+                        || CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType())
+                        // If it is water (if it is set to be ignored)
+                        || (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
+                if (!shouldFill) {
+                    break;
+                }
+
+                world.getBlockAt(x, y, z).setType(fillMaterial);
+                y--;
+            }
         }
     }
 
