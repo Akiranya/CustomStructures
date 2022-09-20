@@ -100,7 +100,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
             var y = minY - 1;
             var x = groundPoint.getBlockX();
             var z = groundPoint.getBlockZ();
-            for (int j = 0; j < 32; j++) {
+            for (int j = 0; j < 64; j++) {
                 boolean shouldFill =
                         // If the block is empty
                         world.getBlockAt(x, y, z).isEmpty()
