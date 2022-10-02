@@ -16,8 +16,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 
 /**
@@ -32,8 +34,8 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
     private Material fillMaterial;
 
     @Override
-    public void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) throws IOException {
-        var fillMaterial = structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome());
+    public void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) {
+        Optional<Material> fillMaterial = structure.getBottomSpaceFill().getFillMaterial(spawnLocation.getBlock().getBiome());
         if (fillMaterial.isPresent()) {
             this.fillMaterial = fillMaterial.get();
         } else return;
@@ -47,14 +49,19 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
 
         // The world to manipulate
         World world = spawnLocation.getWorld();
+        if (world == null) {
+            CustomStructures.getInstance().getLogger().warning("The world in which the structure " + structure.getName() + " spawns is not set");
+            CustomStructures.getInstance().getLogger().warning("Bottom fill will not be applied to structure " + structure.getName());
+            return;
+        }
         Preconditions.checkNotNull(world, "world");
 
         // To get the ground plane, we need to read the schematic
         File file = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + structure.getSchematic());
         ClipboardFormat format = ClipboardFormats.findByFile(file);
         if (format == null) {
-            CustomStructures.getInstance().getLogger().warning("Invalid schematic format for schematic " + structure.getSchematic() + "!");
-            CustomStructures.getInstance().getLogger().warning("Please create a valid schematic using the in-game commands!");
+            CustomStructures.getInstance().getLogger().warning("Invalid schematic format for schematic " + structure.getSchematic());
+            CustomStructures.getInstance().getLogger().warning("Please create a valid schematic using the in-game commands");
             return;
         }
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
@@ -62,9 +69,9 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
 
             // Note: The minimum point of a region is the lowest abs point in the original world
 
-            var minX = minLoc.getBlockX();
-            var minZ = minLoc.getBlockZ();
-            var clipboardMinY = clipboard.getMinimumPoint().getBlockY();
+            int minX = minLoc.getBlockX();
+            int minZ = minLoc.getBlockZ();
+            int clipboardMinY = clipboard.getMinimumPoint().getBlockY();
             for (int x = clipboard.getMinimumPoint().getBlockX(); x <= clipboard.getMaximumPoint().getBlockX(); x++) {
                 for (int z = clipboard.getMinimumPoint().getBlockZ(); z <= clipboard.getMaximumPoint().getBlockZ(); z++) {
                     if (clipboard.getBlock(BlockVector3.at(x, clipboardMinY, z)).getBlockType().getMaterial().isMovementBlocker()) {
@@ -78,6 +85,14 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
                     }
                 }
             }
+        } catch (FileNotFoundException e) {
+            CustomStructures.getInstance().getLogger().warning("Cannot find schematic file " + file.getPath());
+            CustomStructures.getInstance().getLogger().warning("Bottom fill will not be applied to structure " + structure.getName());
+            return;
+        } catch (IOException e) {
+            CustomStructures.getInstance().getLogger().warning("Some unknown error occurs while reading " + file.getPath());
+            CustomStructures.getInstance().getLogger().warning("Bottom fill will not be applied to structure " + structure.getName());
+            return;
         }
 
         runTaskTimer(CustomStructures.getInstance(), 0, 1);
@@ -85,21 +100,21 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFill {
 
     @Override
     public void run() {
-        var world = spawnLocation.getWorld();
+        World world = spawnLocation.getWorld();
         Preconditions.checkNotNull(world, "world");
 
         // First pick 8 ground points
         for (int i = 0; i < 8; i++) {
-            var groundPoint = groundPlane.poll();
+            BlockVector2 groundPoint = groundPlane.poll();
             if (groundPoint == null) {
                 cancel();
                 return;
             }
 
             // Then fill the bottom space of the 8 ground points down to 32 blocks
-            var y = minY - 1;
-            var x = groundPoint.getBlockX();
-            var z = groundPoint.getBlockZ();
+            int y = minY - 1;
+            int x = groundPoint.getBlockX();
+            int z = groundPoint.getBlockZ();
             for (int j = 0; j < 64; j++) {
                 boolean shouldFill =
                         // If the block is empty

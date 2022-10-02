@@ -3,8 +3,6 @@ package com.ryandw11.structure.bottomfill;
 import com.ryandw11.structure.structure.Structure;
 import org.bukkit.Location;
 
-import java.io.IOException;
-
 /**
  * The interface for bottom fill implementations.
  *
@@ -22,5 +20,5 @@ public interface BottomFill {
      * @param minLoc        The minimum location of the structure in the world to paste onto.
      * @param maxLoc        The maximum location of the structure in the world to paste onto.
      */
-    void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) throws IOException;
+    void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc);
 }
