@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -67,6 +68,10 @@ public class PlayerInteract implements Listener {
                     lootChestTag,
                     lootTable);
             Bukkit.getServer().getPluginManager().callEvent(openLootContainerEvent);
+            if (openLootContainerEvent.isCancelled()) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.setUseItemInHand(Event.Result.DENY);
+            }
         }
     }
 
