@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class LootTable {
 
-    private List<LootTableType> types;
+    private List<LootTableType> types; // TODO this can be removed
     private int rolls;
     private RandomCollection<LootItem> randomCollection;
     private final String name;

@@ -8,6 +8,7 @@ import com.ryandw11.structure.commands.SCommand;
 import com.ryandw11.structure.commands.SCommandTab;
 import com.ryandw11.structure.ignoreblocks.*;
 import com.ryandw11.structure.listener.ChunkLoad;
+import com.ryandw11.structure.listener.PlayerInteract;
 import com.ryandw11.structure.listener.PlayerJoin;
 import com.ryandw11.structure.loottables.LootTablesHandler;
 import com.ryandw11.structure.loottables.customitems.CustomItemManager;
@@ -292,6 +293,7 @@ public class CustomStructures extends JavaPlugin {
     private void loadManager() {
         Bukkit.getServer().getPluginManager().registerEvents(new ChunkLoad(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
         Objects.requireNonNull(getCommand("customstructure")).setExecutor(new SCommand(this));
         Objects.requireNonNull(getCommand("customstructure")).setTabCompleter(new SCommandTab(this));
     }

@@ -19,20 +19,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * This class is used to make a brand new Structure. (This class is also used internally to load structures
- * from structure config files).
+ * This class is used to make a brand new Structure. (This class is also used internally to load structures from
+ * structure config files).
  * <p>You can create a structure completely via code or load a structure from a yaml file.</p>
  * <p>Example using a yaml file:</p>
  * <code>
- * StructureBuilder builder = new StructureBuilder("MyName", file);<br>
- * Structure struct = builder.build();<br>
+ * StructureBuilder builder = new StructureBuilder("MyName", file);<br> Structure struct = builder.build();<br>
  * </code>
  * <p>Example using code:</p>
  * <code>
- * StructureBuilder builder = new StructureBuilder("MyName", file);<br>
- * builder.setStructureLimitations(new StructureLimitations());<br>
- * ...<br>
- * Structure struct = builder.build();<br>
+ * StructureBuilder builder = new StructureBuilder("MyName", file);<br> builder.setStructureLimitations(new
+ * StructureLimitations());<br> ...<br> Structure struct = builder.build();<br>
  * </code>
  */
 public class StructureBuilder {
@@ -128,7 +125,7 @@ public class StructureBuilder {
 
         if (config.contains("compiled_schematic")) {
             isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" +
-                    Objects.requireNonNull(config.getString("compiled_schematic"))).exists();
+                                  Objects.requireNonNull(config.getString("compiled_schematic"))).exists();
             if (!isCompiled)
                 CustomStructures.getInstance().getLogger().severe("Invalid compiled schematic file for: " + name);
             else
@@ -145,25 +142,8 @@ public class StructureBuilder {
 
         lootTables = new HashMap<>();
         if (config.contains("LootTables")) {
-            ConfigurationSection lootableConfig = config.getConfigurationSection("LootTables");
-            assert lootableConfig != null;
-            for (String lootTable : lootableConfig.getKeys(false)) {
-                if (!LootTableType.exists(lootTable))
-                    continue;
-                LootTableType type = LootTableType.valueOf(lootTable.toUpperCase());
-                // Loop through the new loot table section.
-                for (String lootTableName : Objects.requireNonNull(lootableConfig.getConfigurationSection(lootTable)).getKeys(false)) {
-                    int weight = lootableConfig.getInt(lootTable + "." + lootTableName);
-                    LootTable table = CustomStructures.getInstance().getLootTableHandler().getLootTableByName(lootTableName);
-                    table.addType(type);
-                    if (lootTables.containsKey(type))
-                        lootTables.get(type).add(weight, table);
-                    else {
-                        lootTables.put(type, new RandomCollection<>());
-                        lootTables.get(type).add(weight, table);
-                    }
-                }
-            }
+            ConfigurationSection lootTableConfig = config.getConfigurationSection("LootTables");
+            setLootTables(Objects.requireNonNull(lootTableConfig)); // Should never throw NPE
         }
 
         // Go through and setup the sections for the addons.
@@ -180,7 +160,7 @@ public class StructureBuilder {
                 } catch (StructureConfigurationException ex) {
                     // Handle the structureConfigurationException.
                     throw new StructureConfigurationException(String.format("[%s Addon] %s. This is not" +
-                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
+                                                                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
                 } catch (Throwable ex) {
                     // Inform the user of errors.
                     plugin.getLogger().severe(String.format("An error was encountered in the %s addon! Enable debug for more information.", addon.getName()));
@@ -201,17 +181,18 @@ public class StructureBuilder {
                         constructedSection.setupSection(config.getConfigurationSection(constructedSection.getName()));
                     }
                     this.structureSections.add(constructedSection);
-                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                         InvocationTargetException ex) {
                     // Inform the user of errors.
                     plugin.getLogger().severe(String.format("The section %s for the addon %s" +
-                                    "is configured incorrectly. If you are the developer please refer to the API documentation.",
+                                                            "is configured incorrectly. If you are the developer please refer to the API documentation.",
                             section.getName(), addon.getName()));
                     plugin.getLogger().severe("This is not an issue with CustomStructures." +
-                            "Report this error to the addon developer!!");
+                                              "Report this error to the addon developer!!");
                 } catch (StructureConfigurationException ex) {
                     // Handle the structureConfigurationException.
                     throw new StructureConfigurationException(String.format("[%s Addon] %s. This is not" +
-                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
+                                                                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
                 } catch (Exception ex) {
                     // Inform the user of errors.
                     plugin.getLogger().severe(String.format("An error was encountered in the %s addon! Enable debug for more information.", addon.getName()));
@@ -334,26 +315,22 @@ public class StructureBuilder {
     /**
      * Set the loot tables from a configuration section.
      *
-     * @param lootableConfig The loot table configuration section.
+     * @param lootTableConfig The loot table configuration section.
      */
-    public void setLootTables(ConfigurationSection lootableConfig) {
+    public void setLootTables(ConfigurationSection lootTableConfig) {
         lootTables = new HashMap<>();
-        assert lootableConfig != null;
-        for (String lootTable : lootableConfig.getKeys(false)) {
+        for (String lootTable : lootTableConfig.getKeys(false)) {
             if (!LootTableType.exists(lootTable))
                 continue;
+
             LootTableType type = LootTableType.valueOf(lootTable.toUpperCase());
+
             // Loop through the new loot table section.
-            for (String lootTableName : Objects.requireNonNull(lootableConfig.getConfigurationSection(lootTable)).getKeys(false)) {
-                int weight = lootableConfig.getInt(lootTable + "." + lootTableName);
+            for (String lootTableName : Objects.requireNonNull(lootTableConfig.getConfigurationSection(lootTable)).getKeys(false)) {
+                int weight = lootTableConfig.getInt(lootTable + "." + lootTableName);
                 LootTable table = CustomStructures.getInstance().getLootTableHandler().getLootTableByName(lootTableName);
                 table.addType(type);
-                if (lootTables.containsKey(type))
-                    lootTables.get(type).add(weight, table);
-                else {
-                    lootTables.put(type, new RandomCollection<>());
-                    lootTables.get(type).add(weight, table);
-                }
+                lootTables.computeIfAbsent(type, k -> new RandomCollection<>()).add(weight, table);
             }
         }
     }
@@ -375,9 +352,7 @@ public class StructureBuilder {
      */
     public void addLootTable(LootTable lootTable, double weight) {
         for (LootTableType type : lootTable.getTypes()) {
-            if (!lootTables.containsKey(type))
-                lootTables.put(type, new RandomCollection<>());
-            lootTables.get(type).add(weight, lootTable);
+            lootTables.computeIfAbsent(type, k -> new RandomCollection<>()).add(weight, lootTable);
         }
     }
 
@@ -395,8 +370,8 @@ public class StructureBuilder {
 
     /**
      * Add a structure section to the structure builder.
-     * <p>Note: {@link StructureSection#setupSection(ConfigurationSection)} is NOT called by this method. You are expected
-     * to use a constructor.</p>
+     * <p>Note: {@link StructureSection#setupSection(ConfigurationSection)} is NOT called by this method. You are
+     * expected to use a constructor.</p>
      *
      * @param structureSection The structure section to add.
      */

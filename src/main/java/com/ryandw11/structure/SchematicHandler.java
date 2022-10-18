@@ -1,12 +1,10 @@
 package com.ryandw11.structure;
 
-import com.ryandw11.structure.api.LootPopulateEvent;
 import com.ryandw11.structure.api.StructureSpawnEvent;
 import com.ryandw11.structure.api.holder.StructureSpawnHolder;
 import com.ryandw11.structure.bottomfill.BottomFillProvider;
 import com.ryandw11.structure.io.BlockTag;
-import com.ryandw11.structure.loottables.LootTable;
-import com.ryandw11.structure.loottables.LootTableType;
+import com.ryandw11.structure.lootchest.LootChestPopulator;
 import com.ryandw11.structure.structure.Structure;
 import com.ryandw11.structure.structure.properties.AdvancedSubSchematics;
 import com.ryandw11.structure.structure.properties.MaskProperty;
@@ -14,7 +12,6 @@ import com.ryandw11.structure.structure.properties.SubSchematics;
 import com.ryandw11.structure.structure.properties.schematics.SubSchematic;
 import com.ryandw11.structure.utils.CSUtils;
 import com.ryandw11.structure.utils.NumberStylizer;
-import com.ryandw11.structure.utils.RandomCollection;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
@@ -47,7 +44,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -208,8 +204,8 @@ public class SchematicHandler {
             }
 
             for (Location location : containersAndSignsLocations) {
-                if (location.getBlock().getState() instanceof Container) {
-                    replaceContainerContent(structure, location);
+                if (location.getBlock().getState() instanceof Container container) {
+                    LootChestPopulator.instance().writeTags(structure, container);
                 }
                 if (location.getBlock().getState() instanceof Sign) {
                     Location minLoc = getMinimumLocation(clipboard, loc, finalRotY);
@@ -551,69 +547,6 @@ public class SchematicHandler {
     }
 
     /**
-     * Replace the contents of a container with the loot table from a structure.
-     *
-     * @param structure The structure that is being spawned.
-     * @param location  The location of the container.
-     */
-    private void replaceContainerContent(Structure structure, Location location) {
-
-        BlockState blockState = location.getBlock().getState();
-        Container container = (Container) blockState;
-        Inventory containerInventory = container.getInventory();
-        Block block = location.getBlock();
-        LootTableType blockType = LootTableType.valueOf(block.getType());
-
-        boolean explictLoottableDefined = false;
-        LootTable lootTable = null;
-
-        if (containerInventory.getItem(0) != null) {
-            ItemStack paper = containerInventory.getItem(0);
-            if (paper.getType() == Material.PAPER &&
-                    paper.hasItemMeta() &&
-                    paper.getItemMeta().hasDisplayName() &&
-                    paper.getItemMeta().getDisplayName().contains("%${") &&
-                    paper.getItemMeta().getDisplayName().contains("}$%")) {
-                String name = paper.getItemMeta().getDisplayName()
-                        .replace("%${", "")
-                        .replace("}$%", "");
-                lootTable = plugin.getLootTableHandler().getLootTableByName(name);
-                containerInventory.clear();
-                explictLoottableDefined = true;
-            }
-        }
-
-        if (lootTable == null) {
-            if (structure.getLootTables().isEmpty()) return;
-
-            RandomCollection<LootTable> tables = structure.getLootTables(blockType);
-            if (tables == null) return;
-
-            lootTable = tables.next();
-        }
-
-        Random random = new Random();
-
-        // Trigger the loot populate event.
-        LootPopulateEvent event = new LootPopulateEvent(structure, location, lootTable);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-
-        if (event.isCanceled()) return;
-
-        // TODO: This is not a good method, should try to pick another loot table if failed.
-        for (int i = 0; i < lootTable.getRolls(); i++) {
-            if ((lootTable.getTypes().contains(blockType) || explictLoottableDefined) && containerInventory instanceof FurnaceInventory) {
-                this.replaceFurnaceContent(lootTable, (FurnaceInventory) containerInventory);
-            } else if ((lootTable.getTypes().contains(blockType) || explictLoottableDefined) && containerInventory instanceof BrewerInventory) {
-                this.replaceBrewerContent(lootTable, (BrewerInventory) containerInventory);
-            } else if (lootTable.getTypes().contains(blockType) || explictLoottableDefined) {
-                this.replaceChestContent(lootTable, random, containerInventory);
-            }
-        }
-
-    }
-
-    /**
      * Process a sign and spawn mobs, execute commands etc.
      *
      * @param location The location of the sign.
@@ -813,106 +746,6 @@ public class SchematicHandler {
                     ex.printStackTrace();
                 }
             }
-        }
-    }
-
-    /**
-     * Replace the chest content.
-     *
-     * @param lootTable          The loot table.
-     * @param random             The value of random.
-     * @param containerInventory The container inventory
-     */
-    private void replaceChestContent(LootTable lootTable, Random random, Inventory containerInventory) {
-        ItemStack[] containerContent = containerInventory.getContents();
-
-        ItemStack randomItem = lootTable.getRandomWeightedItem();
-
-        for (int j = 0; j < randomItem.getAmount(); j++) {
-            boolean done = false;
-            int attemps = 0;
-            while (!done) {
-                int randomPos = random.nextInt(containerContent.length);
-                ItemStack randomPosItem = containerInventory.getItem(randomPos);
-                if (randomPosItem != null) {
-
-                    if (this.isSameItem(randomPosItem, randomItem)) {
-                        if (randomPosItem.getAmount() < randomItem.getMaxStackSize()) {
-                            ItemStack randomItemCopy = randomItem.clone();
-                            int newAmount = randomPosItem.getAmount() + 1;
-                            randomItemCopy.setAmount(newAmount);
-                            containerContent[randomPos] = randomItemCopy;
-                            containerInventory.setContents(containerContent);
-                            done = true;
-                        }
-                    }
-                } else {
-                    ItemStack randomItemCopy = randomItem.clone();
-                    randomItemCopy.setAmount(1);
-                    containerContent[randomPos] = randomItemCopy;
-                    containerInventory.setContents(containerContent);
-                    done = true;
-
-                }
-                attemps++;
-                if (attemps >= containerContent.length) {
-                    done = true;
-                }
-            }
-        }
-    }
-
-    /**
-     * Check if two items are the same.
-     *
-     * @param randomPosItem The first item.
-     * @param randomItem    The second item.
-     * @return If the two items have the same metadata and type.
-     */
-    private boolean isSameItem(ItemStack randomPosItem, ItemStack randomItem) {
-        ItemMeta randomPosItemMeta = randomPosItem.getItemMeta();
-        ItemMeta randomItemMeta = randomItem.getItemMeta();
-
-        return randomPosItem.getType().equals(randomItem.getType()) && randomPosItemMeta.equals(randomItemMeta);
-    }
-
-    /**
-     * Replace the contents of a brewer with the loot table.
-     *
-     * @param lootTable          The loot table to populate the brewer with.
-     * @param containerInventory The inventory of the brewer.
-     */
-    private void replaceBrewerContent(LootTable lootTable, BrewerInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem();
-        ItemStack ingredient = containerInventory.getIngredient();
-        ItemStack fuel = containerInventory.getFuel();
-
-        if ((ingredient == null) || ingredient.equals(item)) {
-            containerInventory.setIngredient(item);
-        } else if ((fuel == null) || fuel.equals(item)) {
-            containerInventory.setFuel(item);
-        }
-
-    }
-
-    /**
-     * Replace the content of the furnace with loot table items.
-     *
-     * @param lootTable          The loot table selected for the furnace.
-     * @param containerInventory The inventory of the furnace.
-     */
-    private void replaceFurnaceContent(LootTable lootTable, FurnaceInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem();
-        ItemStack result = containerInventory.getResult();
-        ItemStack fuel = containerInventory.getFuel();
-        ItemStack smelting = containerInventory.getSmelting();
-
-        if ((result == null) || result.equals(item)) {
-            containerInventory.setResult(item);
-        } else if ((fuel == null) || fuel.equals(item)) {
-            containerInventory.setFuel(item);
-        } else if ((smelting == null) || smelting.equals(item)) {
-            containerInventory.setSmelting(item);
         }
     }
 

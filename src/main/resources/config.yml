@@ -16,5 +16,13 @@ bstats: true
 # Enabling this option allows developers to use the API to get the location of structures.
 logStructures: false
 
+# Loot chest settings
+lootables:
+  autoRefill: true
+  refreshMin: 2d
+  refreshMax: 12h
+  maxRefills: -1
+  restrictPlayerReloot: true
+
 Structures:
-    - demo
+  - demo
