@@ -28,11 +28,12 @@ class LootChestPopulatorImpl implements LootChestPopulator {
         String lootTableName = null; // If this is given some value, that means this container is explicitly set to a loot table
         if (itemInFirstSlot != null && itemInFirstSlot.getType() == Material.PAPER) {
             if (itemInFirstSlot.hasItemMeta()) {
-                final @NotNull ItemMeta meta = Objects.requireNonNull(itemInFirstSlot.getItemMeta());
+                @NotNull final ItemMeta meta = Objects.requireNonNull(itemInFirstSlot.getItemMeta());
                 if (meta.hasDisplayName()) {
-                    @NotNull String displayName = meta.getDisplayName().trim();
+                    @NotNull final String displayName = meta.getDisplayName().trim();
                     if (displayName.startsWith("%${") && displayName.endsWith("}$%")) {
                         lootTableName = displayName.replace("%${", "").replace("}$%", "").trim();
+                        container.getInventory().clear();
                     }
                 }
             }
