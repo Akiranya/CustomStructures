@@ -5,6 +5,6 @@ import org.bukkit.NamespacedKey;
 
 public final class LootChestConstant {
 
-    public static final NamespacedKey LOOT_CHEST = new NamespacedKey(CustomStructures.getInstance(), "loot_chest");
+    public static final NamespacedKey LOOT_CHEST = new NamespacedKey(CustomStructures.getInstance(), "loot-chest");
 
 }
