@@ -1,7 +1,7 @@
 package com.ryandw11.structure.listener;
 
 import com.ryandw11.structure.CustomStructures;
-import com.ryandw11.structure.api.OpenLootContainerEvent;
+import com.ryandw11.structure.api.LootInventoryOpenEvent;
 import com.ryandw11.structure.lootchest.LootChestConstant;
 import com.ryandw11.structure.lootchest.LootChestPopulator;
 import com.ryandw11.structure.lootchest.LootChestTag;
@@ -28,7 +28,7 @@ public class PlayerInteract implements Listener {
     /**
      * <p><b>FOR INTERNAL USE.</b>
      *
-     * <p>It is used to fire an {@link com.ryandw11.structure.api.OpenLootContainerEvent} when a player opens a loot
+     * <p>It is used to fire an {@link com.ryandw11.structure.api.LootInventoryOpenEvent} when a player opens a loot
      * container of custom structure, so other code (internal or external code) can modify the loot container.
      *
      * @param event the event
@@ -61,14 +61,14 @@ public class PlayerInteract implements Listener {
                     "This error could occur if you changed the filename of structure yml after the structure was generated in the world. " +
                     "Regenerating the world should fix this issue.");
             LootTable lootTable = explicitLootTableName.map(s -> CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s)).orElse(null);
-            OpenLootContainerEvent openLootContainerEvent = new OpenLootContainerEvent(
+            LootInventoryOpenEvent lootInventoryOpenEvent = new LootInventoryOpenEvent(
                     event.getPlayer(),
                     structure,
                     container,
                     lootChestTag,
                     lootTable);
-            Bukkit.getServer().getPluginManager().callEvent(openLootContainerEvent);
-            if (openLootContainerEvent.isCancelled()) {
+            Bukkit.getServer().getPluginManager().callEvent(lootInventoryOpenEvent);
+            if (lootInventoryOpenEvent.isCancelled()) {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);
             }
@@ -81,7 +81,7 @@ public class PlayerInteract implements Listener {
      * @param event the event
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void generateLoot(OpenLootContainerEvent event) {
+    public void generateLoot(LootInventoryOpenEvent event) {
         LootChestTag lootChestTag = event.getLootChestTag();
         if (lootChestTag.shouldRefill(event.getPlayer())) {
             lootChestTag.processRefill(event.getPlayer());

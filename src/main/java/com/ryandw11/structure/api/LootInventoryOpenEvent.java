@@ -19,7 +19,7 @@ import java.util.Optional;
  * expected to use this event to modify the loot contents of the container.
  */
 @SuppressWarnings("unused")
-public class OpenLootContainerEvent extends PlayerEvent implements Cancellable {
+public class LootInventoryOpenEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -36,7 +36,7 @@ public class OpenLootContainerEvent extends PlayerEvent implements Cancellable {
      * @param lootTable the loot table if one is specifically set for this container, or simply pass {@code null} if no
      *                  one is set
      */
-    public OpenLootContainerEvent(
+    public LootInventoryOpenEvent(
             @NotNull Player who,
             @NotNull Structure structure,
             @NotNull Container container,
