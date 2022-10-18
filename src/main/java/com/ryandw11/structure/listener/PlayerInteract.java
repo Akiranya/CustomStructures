@@ -89,6 +89,7 @@ public class PlayerInteract implements Listener {
 
             // Store the updated tags back
             event.getContainer().getPersistentDataContainer().set(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE, lootChestTag);
+            event.getContainer().update();
         }
     }
 
