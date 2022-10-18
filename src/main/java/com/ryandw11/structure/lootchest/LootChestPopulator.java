@@ -26,8 +26,9 @@ public interface LootChestPopulator {
     }
 
     /**
-     * Writes tags (i.e. {@link LootChestTag}) into the container. The tags contain necessary information for the
-     * desired loot table to be populated in the container.
+     * Writes tags (i.e. {@link LootChestTag}) into given container. The tags should contain necessary information for
+     * the desired loot table to be populated in the container when calling
+     * {@link #populateContents(org.bukkit.block.Container)}.
      *
      * @param structure the structure the given container belongs to
      * @param container the container to write tag in
@@ -37,7 +38,8 @@ public interface LootChestPopulator {
 
     /**
      * Replaces the contents of a container with a loot table from a structure. The contents to be populated depend on
-     * the loot chest tags ({@link LootChestTag}) stored in the container.
+     * the loot chest tags ({@link LootChestTag}) stored in the container. The contents of given container will not be
+     * modified if there is no LootChestTag stored in the container.
      *
      * @param container the container to populate contents in
      * @see #writeTags(Structure, Container)
