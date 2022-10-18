@@ -24,16 +24,16 @@ class LootChestPopulatorImpl implements LootChestPopulator {
 
     @Override
     public void writeTags(Structure structure, Container container) {
-        final ItemStack itemInFirstSlot = container.getInventory().getItem(0);
+        final int firstItemIndex = 0;
+        final ItemStack firstItem = container.getInventory().getItem(firstItemIndex);
         String lootTableName = null; // If this is given some value, that means this container is explicitly set to a loot table
-        if (itemInFirstSlot != null && itemInFirstSlot.getType() == Material.PAPER) {
-            if (itemInFirstSlot.hasItemMeta()) {
-                @NotNull final ItemMeta meta = Objects.requireNonNull(itemInFirstSlot.getItemMeta());
+        if (firstItem != null && firstItem.getType() == Material.PAPER) {
+            if (firstItem.hasItemMeta()) {
+                @NotNull final ItemMeta meta = Objects.requireNonNull(firstItem.getItemMeta());
                 if (meta.hasDisplayName()) {
                     @NotNull final String displayName = meta.getDisplayName().trim();
                     if (displayName.startsWith("%${") && displayName.endsWith("}$%")) {
                         lootTableName = displayName.replace("%${", "").replace("}$%", "").trim();
-                        container.getInventory().clear();
                     }
                 }
             }
@@ -44,6 +44,7 @@ class LootChestPopulatorImpl implements LootChestPopulator {
                 LootChestTag.of(structure.getName(), lootTableName)
         );
         container.update();
+        container.getInventory().clear(firstItemIndex); // This must execute lastly, otherwise container.update() would somewhat undo it
     }
 
     @Override

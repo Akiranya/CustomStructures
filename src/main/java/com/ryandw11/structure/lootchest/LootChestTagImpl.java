@@ -76,7 +76,7 @@ class LootChestTagImpl implements LootChestTag {
         if (config.getBoolean("lootables.restrictPlayerReloot") && hasPlayerLooted(player)) {
             lootContainerRefillEvent.setCancelled(true);
         }
-        return lootContainerRefillEvent.isCancelled();
+        return !lootContainerRefillEvent.isCancelled();
     }
 
     public void processRefill(@Nullable Player player) {

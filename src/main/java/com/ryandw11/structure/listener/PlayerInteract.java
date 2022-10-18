@@ -29,7 +29,7 @@ public class PlayerInteract implements Listener {
      * <p><b>FOR INTERNAL USE.</b>
      *
      * <p>It is used to fire an {@link com.ryandw11.structure.api.OpenLootContainerEvent} when a player opens a loot
-     * container of custom structure.
+     * container of custom structure, so other code (internal or external code) can modify the loot container.
      *
      * @param event the event
      */
@@ -84,12 +84,14 @@ public class PlayerInteract implements Listener {
     public void generateLoot(OpenLootContainerEvent event) {
         LootChestTag lootChestTag = event.getLootChestTag();
         if (lootChestTag.shouldRefill(event.getPlayer())) {
-            LootChestPopulator.instance().populateContents(event.getContainer());
             lootChestTag.processRefill(event.getPlayer());
 
-            // Store the updated tags back
-            event.getContainer().getPersistentDataContainer().set(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE, lootChestTag);
-            event.getContainer().update();
+            // Store the updated tags back to the container
+            Container container = event.getContainer();
+            container.getPersistentDataContainer().set(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE, lootChestTag);
+            container.update();
+
+            LootChestPopulator.instance().populateContents(container); // Changes to inventory must be done AFTER container.update()
         }
     }
 
