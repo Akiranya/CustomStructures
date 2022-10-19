@@ -3,7 +3,6 @@ package com.ryandw11.structure.loottables;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.exceptions.LootTableException;
 import com.ryandw11.structure.utils.RandomCollection;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,14 +11,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Represents a LootTable file.
  */
 public class LootTable {
 
-    private List<LootTableType> types; // TODO this can be removed
     private int rolls;
     private RandomCollection<LootItem> randomCollection;
     private final String name;
@@ -40,9 +42,7 @@ public class LootTable {
         if (!lootTablesFC.contains("Rolls"))
             throw new LootTableException("Invalid loot table format! Cannot find global 'Rolls' setting.");
 
-        this.types = new ArrayList<>();
         this.rolls = this.lootTablesFC.getInt("Rolls");
-
 
         this.loadItems();
     }
@@ -130,33 +130,6 @@ public class LootTable {
         } catch (IOException | InvalidConfigurationException e) {
             throw new LootTableException("Invalid LootTable Configuration! Please view the guide on the wiki for more information.");
         }
-    }
-
-    /**
-     * Get the types of the loot table.
-     *
-     * @return The types
-     */
-    public List<LootTableType> getTypes() {
-        return types;
-    }
-
-    /**
-     * Set the types of the loot table.
-     *
-     * @param types The types to set the loot table to.
-     */
-    public void setTypes(List<LootTableType> types) {
-        this.types = types;
-    }
-
-    /**
-     * Add a type to the loot table.
-     *
-     * @param type The type to add.
-     */
-    public void addType(LootTableType type) {
-        this.types.add(type);
     }
 
     /**
