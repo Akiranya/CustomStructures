@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * <p>Represents an event which is called when a player opens (i.e. typically right-clicks) a loot container that
  * belongs to a custom structure. Cancelling this event will only prevent the player opening the loot container, but it
- * does prevent the container from generating loots or refilling.
+ * does NOT prevent the container from generating loots or refilling.
  *
  * <p>Listeners may use this event to modify the loot contents of the container. An example would be
  * {@link com.ryandw11.structure.listener.PlayerInteract#generateLoot(LootInventoryOpenEvent)}.
