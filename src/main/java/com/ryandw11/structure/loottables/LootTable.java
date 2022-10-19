@@ -55,7 +55,7 @@ public class LootTable {
         if (!lootTablesFC.contains("Items"))
             throw new LootTableException("Invalid LootTable format! The 'Items' section is required!");
 
-        for (String itemID : this.lootTablesFC.getConfigurationSection("Items").getKeys(false)) {
+        for (String itemID : Objects.requireNonNull(this.lootTablesFC.getConfigurationSection("Items"), "\"Items\" entry not found in the loot table config").getKeys(false)) {
             // This will throw an exception if the item is not valid.
             validateItem(itemID);
 
@@ -170,7 +170,7 @@ public class LootTable {
      */
     public List<LootItem> getItems() {
         List<LootItem> result = new ArrayList<>();
-        for (String itemID : this.lootTablesFC.getConfigurationSection("Items").getKeys(false)) {
+        for (String itemID : Objects.requireNonNull(this.lootTablesFC.getConfigurationSection("Items"), "\"Items\" entry not found in the loot table config").getKeys(false)) {
             this.validateItem(itemID);
 
             String customName = this.lootTablesFC.getString("Items." + itemID + ".Name");
