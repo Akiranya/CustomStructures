@@ -30,11 +30,11 @@ public interface LootChestPopulator {
 
     /**
      * Writes tags (i.e. {@link LootChestTag}) into given container. The tags should contain necessary information for
-     * the desired loot table to be populated in the container when calling
-     * {@link #populateContents(Player, Container)}.
+     * the desired loot table to be populated in the container when calling {@link #populateContents(Player, Container)}
+     * later on.
      *
      * @param structure the structure the given container belongs to
-     * @param container the container to write tag in
+     * @param container the container to write tags in
      * @see #populateContents(Player, Container)
      */
     void writeTags(@NotNull Structure structure, @NotNull Container container);
