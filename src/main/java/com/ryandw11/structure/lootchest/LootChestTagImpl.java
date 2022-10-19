@@ -1,7 +1,7 @@
 package com.ryandw11.structure.lootchest;
 
 import com.ryandw11.structure.CustomStructures;
-import com.ryandw11.structure.api.LootContainerRefillEvent;
+import com.ryandw11.structure.api.LootInventoryRefillEvent;
 import com.ryandw11.structure.config.Duration;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,12 +71,12 @@ class LootChestTagImpl implements LootChestTag {
             return false;
         }
 
-        LootContainerRefillEvent lootContainerRefillEvent = new LootContainerRefillEvent(player, this);
-        Bukkit.getServer().getPluginManager().callEvent(lootContainerRefillEvent);
+        LootInventoryRefillEvent lootInventoryRefillEvent = new LootInventoryRefillEvent(player, this);
+        Bukkit.getServer().getPluginManager().callEvent(lootInventoryRefillEvent);
         if (config.getBoolean("lootables.restrictPlayerReloot") && hasPlayerLooted(player)) {
-            lootContainerRefillEvent.setCancelled(true);
+            lootInventoryRefillEvent.setCancelled(true);
         }
-        return !lootContainerRefillEvent.isCancelled();
+        return !lootInventoryRefillEvent.isCancelled();
     }
 
     public void processRefill(@Nullable Player player) {

@@ -1,36 +1,60 @@
 package com.ryandw11.structure.api;
 
+import com.ryandw11.structure.lootchest.LootChestTag;
 import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.structure.Structure;
 import org.bukkit.Location;
+import org.bukkit.block.Container;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is called just before a container is populated with a loot table.
  */
-public class LootPopulateEvent extends Event {
+public class LootPopulateEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private final Structure structure;
-    private final Location location;
-    private final LootTable lootTable;
+    @Nullable private final Player player;
+    @NotNull private final Structure structure;
+    @NotNull private final Container container;
+    @NotNull private final LootTable lootTable;
+    @NotNull private final LootChestTag lootChestTag;
     private boolean canceled;
 
     /**
      * Construct the loot populate event.
      *
-     * @param structure The structure.
-     * @param location  The location.
-     * @param lootTable The loot table.
+     * @param player       the player who triggers this population
+     * @param structure    the structure which this container belongs to
+     * @param container    the container to be populated
+     * @param lootTable    the loot table that is selected for this container
+     * @param lootChestTag the loot chest tags stored in this container
      */
-    public LootPopulateEvent(Structure structure, Location location, LootTable lootTable) {
+    public LootPopulateEvent(
+            @Nullable Player player,
+            @NotNull Structure structure,
+            @NotNull Container container,
+            @NotNull LootTable lootTable,
+            @NotNull LootChestTag lootChestTag) {
+        this.player = player;
         this.structure = structure;
         this.lootTable = lootTable;
-        this.location = location;
+        this.container = container;
+        this.lootChestTag = lootChestTag;
         this.canceled = false;
+    }
+
+
+    /**
+     * @return the player who is opening this container, or {@code null} if this population has no player related to
+     */
+    public @Nullable Player getPlayer() {
+        return player;
     }
 
     /**
@@ -38,8 +62,26 @@ public class LootPopulateEvent extends Event {
      *
      * @return The structure that spawned.
      */
-    public Structure getStructure() {
+    public @NotNull Structure getStructure() {
         return structure;
+    }
+
+    /**
+     * Get the container to be populated.
+     *
+     * @return The location of the container.
+     */
+    public @NotNull Container getContainer() {
+        return container;
+    }
+
+    /**
+     * @return the location of the container
+     * @deprecated Use {@link #getContainer()} to get the location
+     */
+    @Deprecated
+    public @NotNull Location getLocation() {
+        return container.getLocation();
     }
 
     /**
@@ -47,44 +89,50 @@ public class LootPopulateEvent extends Event {
      *
      * @return The selected loot table for the container.
      */
-    public LootTable getLootTable() {
+    public @NotNull LootTable getLootTable() {
         return lootTable;
     }
 
     /**
-     * Get the location of the container.
-     *
-     * @return The location of the container.
+     * @return the tags stored in the container that the player is opening
      */
-    public Location getLocation() {
-        return location;
+    public @NotNull LootChestTag getLootChestTag() {
+        return lootChestTag;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return canceled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        canceled = cancel;
     }
 
     /**
-     * Set if the event is canceled.
-     *
-     * @param canceled If the event is canceled.
+     * @deprecated Use {@link #setCancelled(boolean)}
      */
+    @Deprecated
     public void setCanceled(boolean canceled) {
         this.canceled = canceled;
     }
 
     /**
-     * Get if the event is canceled.
-     *
-     * @return if the event is canceled.
+     * @deprecated Use {@link #isCancelled()}
      */
+    @Deprecated
     public boolean isCanceled() {
         return canceled;
     }
 
-    @NotNull
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
+
 }

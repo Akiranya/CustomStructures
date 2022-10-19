@@ -1,11 +1,14 @@
 package com.ryandw11.structure.lootchest;
 
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import com.ryandw11.structure.structure.Structure;
 import org.bukkit.block.Container;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * <p>This class manages the content creation of loot containers in structures.
+ * <p>This class manages the content creation of loot containers in custom structures.
  *
  * <p>The general notion of the loot generation system is that: <b>loots are generated upon a player opening the
  * containers, rather than being generated upon structure generation.</b> This notion is pretty much like the vanilla
@@ -28,13 +31,13 @@ public interface LootChestPopulator {
     /**
      * Writes tags (i.e. {@link LootChestTag}) into given container. The tags should contain necessary information for
      * the desired loot table to be populated in the container when calling
-     * {@link #populateContents(org.bukkit.block.Container)}.
+     * {@link #populateContents(Player, Container)}.
      *
      * @param structure the structure the given container belongs to
      * @param container the container to write tag in
-     * @see #populateContents(Container)
+     * @see #populateContents(Player, Container)
      */
-    void writeTags(Structure structure, Container container);
+    void writeTags(@NotNull Structure structure, @NotNull Container container);
 
     /**
      * Replaces the contents of a container with a loot table from a structure. The contents to be populated depend on
@@ -44,6 +47,6 @@ public interface LootChestPopulator {
      * @param container the container to populate contents in
      * @see #writeTags(Structure, Container)
      */
-    void populateContents(Container container);
+    void populateContents(@Nullable Player player, @NotNull Container container);
 
 }

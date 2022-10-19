@@ -8,18 +8,19 @@ import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an event which is called when a loot container gets refilled. Cancelling this event will prevent the
- * container from being refilled.
+ * Represents an event which is called when a loot container is about to get refilled. Note that this event is called
+ * <b>before</b> the loot table is selected and populated in the container, so the loot table is unknown when this
+ * event gets called. Cancelling this event will prevent the container from being refilled.
  */
 @SuppressWarnings("unused")
-public class LootContainerRefillEvent extends PlayerEvent implements Cancellable {
+public class LootInventoryRefillEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
     @NotNull private final LootChestTag lootChestTag;
     private boolean cancel = false;
 
-    public LootContainerRefillEvent(@NotNull Player who, @NotNull LootChestTag lootChestTag) {
+    public LootInventoryRefillEvent(@NotNull Player who, @NotNull LootChestTag lootChestTag) {
         super(who);
         this.lootChestTag = lootChestTag;
     }

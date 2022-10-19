@@ -72,8 +72,24 @@ public interface LootChestTag {
         return getLastLooted(player.getUniqueId());
     }
 
+    /**
+     * Returns whether this container should be refilled.
+     *
+     * @param player the player who is opening this loot container
+     * @return true if this container should be refilled, otherwise false
+     */
     boolean shouldRefill(@Nullable Player player);
 
+    /**
+     * <p>Processes the refill once.
+     *
+     * <p>This only updates relevant tags stored in this instance - no changes will apply to the attached container by
+     * calling this method. To make the changes actually apply to the container, it requires to manually update the
+     * PersistentDataContainer of the container. See {@link org.bukkit.block.Container#getPersistentDataContainer()} for
+     * more details.
+     *
+     * @param player the player who is opening this loot container
+     */
     void processRefill(@Nullable Player player);
 
 }

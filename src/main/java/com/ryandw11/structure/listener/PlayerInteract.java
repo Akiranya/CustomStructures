@@ -51,16 +51,23 @@ public class PlayerInteract implements Listener {
                 return;
             }
 
-            // Raw information in the tags
+            // ---- Get raw information in the tags ----
+
             String structureName = lootChestTag.getStructureName();
             Optional<String> explicitLootTableName = lootChestTag.getExplicitLootTableName();
 
-            // Fire event (to let other code handle the loot generation)
+            // ---- Construct and fire the event ----
+            // (to let other code handle the loot generation)
+
+            // Note that we need to make sure the stored name of structure and loot table are valid
+            // before we fire the event. This should make the life of listeners of this event easier!
+
             Structure structure = Objects.requireNonNull(CustomStructures.getInstance().getStructureHandler().getStructure(structureName),
-                    "The structure named \"" + structureName + "\" in the loot chest tags was not found in the plugin config. " +
-                    "This error could occur if you changed the filename of structure yml after the structure was generated in the world. " +
-                    "Regenerating the world should fix this issue.");
-            LootTable lootTable = explicitLootTableName.map(s -> CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s)).orElse(null);
+                    "The structure named \"" + structureName + "\" in the loot chest tags was not found in the plugin config.");
+            LootTable lootTable = explicitLootTableName
+                    .map(s -> Objects.requireNonNull(CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s),
+                            "The loot table named \"" + s + "\" in the loot chest tags was not found in the plugin config. "))
+                    .orElse(null);
             LootInventoryOpenEvent lootInventoryOpenEvent = new LootInventoryOpenEvent(
                     event.getPlayer(),
                     structure,
@@ -68,6 +75,7 @@ public class PlayerInteract implements Listener {
                     lootChestTag,
                     lootTable);
             Bukkit.getServer().getPluginManager().callEvent(lootInventoryOpenEvent);
+
             if (lootInventoryOpenEvent.isCancelled()) {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);
@@ -84,14 +92,7 @@ public class PlayerInteract implements Listener {
     public void generateLoot(LootInventoryOpenEvent event) {
         LootChestTag lootChestTag = event.getLootChestTag();
         if (lootChestTag.shouldRefill(event.getPlayer())) {
-            lootChestTag.processRefill(event.getPlayer());
-
-            // Store the updated tags back to the container
-            Container container = event.getContainer();
-            container.getPersistentDataContainer().set(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE, lootChestTag);
-            container.update();
-
-            LootChestPopulator.instance().populateContents(container); // Changes to inventory must be done AFTER container.update()
+            LootChestPopulator.instance().populateContents(event.getPlayer(), event.getContainer());
         }
     }
 

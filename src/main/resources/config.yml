@@ -23,6 +23,7 @@ lootables:
   refreshMax: 12h
   maxRefills: -1
   restrictPlayerReloot: true
+  unbreakable: true
 
 Structures:
   - demo
