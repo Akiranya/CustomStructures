@@ -24,9 +24,9 @@ public interface LootChestTag {
     }
 
     /**
-     * Returns the structure which this loot chest is bound to.
+     * Returns the name of the structure which this loot chest is bound to.
      *
-     * @return the structure which this loot chest is bound to
+     * @return the name of the structure which this loot chest is bound to
      */
     @NotNull String getStructureName();
 
