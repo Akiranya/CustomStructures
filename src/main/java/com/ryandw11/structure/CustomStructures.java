@@ -8,6 +8,7 @@ import com.ryandw11.structure.commands.SCommand;
 import com.ryandw11.structure.commands.SCommandTab;
 import com.ryandw11.structure.ignoreblocks.*;
 import com.ryandw11.structure.listener.ChunkLoad;
+import com.ryandw11.structure.listener.LootProtect;
 import com.ryandw11.structure.listener.PlayerInteract;
 import com.ryandw11.structure.listener.PlayerJoin;
 import com.ryandw11.structure.loottables.LootTablesHandler;
@@ -27,6 +28,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -80,8 +82,9 @@ public class CustomStructures extends JavaPlugin {
         enabled = true;
 
         plugin = this;
-        loadManager();
+        loadCommands();
         registerConfig();
+        registerListeners();
         setupBlockIgnore();
 
         // Small check to make sure that PlaceholderAPI is installed
@@ -138,7 +141,7 @@ public class CustomStructures extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             if (getConfig().getInt("configversion") != CONFIG_VERSION) {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CustomStructures] Cannot enable plugin, your config version is outdated. " +
-                        "Check the above for errors that may have occurred during the auto-update process." + ChatColor.RESET);
+                                                      "Check the above for errors that may have occurred during the auto-update process." + ChatColor.RESET);
                 return;
             }
 
@@ -279,6 +282,14 @@ public class CustomStructures extends JavaPlugin {
     }
 
     /**
+     * Reload listeners.
+     */
+    public void reloadListeners() {
+        HandlerList.unregisterAll(this);
+        registerListeners();
+    }
+
+    /**
      * Get the instance of the main class.
      *
      * @return The main class.
@@ -288,14 +299,23 @@ public class CustomStructures extends JavaPlugin {
     }
 
     /**
-     * Load commands and listeners.
+     * Load commands.
      */
-    private void loadManager() {
+    private void loadCommands() {
+        Objects.requireNonNull(getCommand("customstructure")).setExecutor(new SCommand(this));
+        Objects.requireNonNull(getCommand("customstructure")).setTabCompleter(new SCommandTab(this));
+    }
+
+    /**
+     * Register listeners.
+     */
+    private void registerListeners() {
         Bukkit.getServer().getPluginManager().registerEvents(new ChunkLoad(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
-        Objects.requireNonNull(getCommand("customstructure")).setExecutor(new SCommand(this));
-        Objects.requireNonNull(getCommand("customstructure")).setTabCompleter(new SCommandTab(this));
+        if (getConfig().getBoolean("lootables.unbreakable")) {
+            Bukkit.getServer().getPluginManager().registerEvents(new LootProtect(), this);
+        }
     }
 
     /**

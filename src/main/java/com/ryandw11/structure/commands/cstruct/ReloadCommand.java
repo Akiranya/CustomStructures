@@ -33,6 +33,7 @@ public class ReloadCommand implements SubCommand {
             sender.sendMessage(ChatColor.GREEN + "The plugin has been reloaded!");
             plugin.getLogger().info("Plugin reloaded!");
             plugin.reloadHandlers();
+            plugin.reloadListeners();
         } else {
             sender.sendMessage(ChatColor.RED + "You do not have permission for this command.");
         }
