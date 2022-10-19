@@ -9,9 +9,11 @@ import com.ryandw11.structure.lootchest.LootChestTagType;
 import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.structure.Structure;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -90,9 +92,15 @@ public class PlayerInteract implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void generateLoot(LootInventoryOpenEvent event) {
+        Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.SPECTATOR) {
+            player.sendMessage("The loot of this container has not been generated yet.");
+            return;
+        }
+
         LootChestTag lootChestTag = event.getLootChestTag();
-        if (lootChestTag.shouldRefill(event.getPlayer())) {
-            LootChestPopulator.instance().populateContents(event.getPlayer(), event.getContainer());
+        if (lootChestTag.shouldRefill(player)) {
+            LootChestPopulator.instance().populateContents(player, event.getContainer());
         }
     }
 
