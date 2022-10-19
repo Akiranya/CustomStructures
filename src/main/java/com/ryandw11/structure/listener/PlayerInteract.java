@@ -94,7 +94,7 @@ public class PlayerInteract implements Listener {
     public void generateLoot(LootInventoryOpenEvent event) {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.SPECTATOR) {
-            player.sendMessage("The loot of this container has not been generated yet.");
+            player.sendMessage("Spectator does not trigger loot generation.");
             return;
         }
 
