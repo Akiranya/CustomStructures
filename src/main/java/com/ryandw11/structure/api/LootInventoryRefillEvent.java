@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * this event gets called. Cancelling this event will prevent the container from being refilled.
  *
  * <p>This event only gets fired when refilling, not when the container is populated for the first time. If you wanted
- * to cancel the first content population, you may use {@link com.ryandw11.structure.api.LootPopulateEvent}
+ * to cancel the initial content population, you may use {@link com.ryandw11.structure.api.LootPopulateEvent}.
  */
 @SuppressWarnings("unused")
 public class LootInventoryRefillEvent extends PlayerEvent implements Cancellable {
