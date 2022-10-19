@@ -8,9 +8,12 @@ import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an event which is called when a loot container is about to get refilled. Note that this event is called
- * <b>before</b> the loot table is selected and populated in the container, so the loot table is unknown when this
- * event gets called. Cancelling this event will prevent the container from being refilled.
+ * <p>Represents an event which is called when a loot container is about to get refilled. Note that this event is
+ * called <b>before</b> the loot table is selected and populated in the container, so the loot table is unknown when
+ * this event gets called. Cancelling this event will prevent the container from being refilled.
+ *
+ * <p>This event only gets fired when refilling, not when the container is populated for the first time. If you wanted
+ * to cancel the first content population, you may use {@link com.ryandw11.structure.api.LootPopulateEvent}
  */
 @SuppressWarnings("unused")
 public class LootInventoryRefillEvent extends PlayerEvent implements Cancellable {

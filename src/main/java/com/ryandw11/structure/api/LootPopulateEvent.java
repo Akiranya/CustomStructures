@@ -13,7 +13,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This event is called just before a container is populated with a loot table.
+ * <p>This event is called just before a container is populated with a loot table.
+ *
+ * <p>When this event gets called, the container is already allowed to refill its content according to various
+ * settings, that is, {@link com.ryandw11.structure.lootchest.LootChestTag#shouldRefill(org.bukkit.entity.Player)}
+ * returns true.
  */
 public class LootPopulateEvent extends Event implements Cancellable {
 
