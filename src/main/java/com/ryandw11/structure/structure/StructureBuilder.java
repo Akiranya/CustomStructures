@@ -19,18 +19,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * This class is used to make a brand new Structure. (This class is also used internally to load structures from
- * structure config files).
- * <p>You can create a structure completely via code or load a structure from a yaml file.</p>
- * <p>Example using a yaml file:</p>
- * <code>
- * StructureBuilder builder = new StructureBuilder("MyName", file);<br> Structure struct = builder.build();<br>
- * </code>
- * <p>Example using code:</p>
- * <code>
- * StructureBuilder builder = new StructureBuilder("MyName", file);<br> builder.setStructureLimitations(new
- * StructureLimitations());<br> ...<br> Structure struct = builder.build();<br>
- * </code>
+ * <p>This class is used to make a brand-new Structure.
+ * <p>This class is also used internally to load structures from structure config files.
+ * <p>You can create a structure completely via code or load a structure from a yaml file.
+ * <p>Example using a yaml file:
+ * <pre>
+ * {@code StructureBuilder builder = new StructureBuilder("MyName", file);}
+ * {@code Structure struct = builder.build()}
+ * </pre>
+ * <p>Example using code:
+ * <pre>
+ * {@code StructureBuilder builder = new StructureBuilder("MyName", file);}
+ * {@code builder.setStructureLimitations(new StructureLimitations());}
+ * {@code ...}
+ * {@code Structure struct = builder.build();}
+ * </pre>
  */
 public class StructureBuilder {
 
@@ -132,7 +135,7 @@ public class StructureBuilder {
                 compiledSchematic = config.getString("compiled_schematic");
         }
 
-        structureLocation = new StructureLocation(this, config);
+        structureLocation = new StructureLocation(config);
         structureProperties = new StructureProperties(config);
         structureLimitations = new StructureLimitations(config);
         maskProperty = new MaskProperty(config);
@@ -319,17 +322,17 @@ public class StructureBuilder {
      */
     public void setLootTables(ConfigurationSection lootTableConfig) {
         lootTables = new HashMap<>();
-        for (String lootTable : lootTableConfig.getKeys(false)) {
-            if (!LootTableType.exists(lootTable))
+        for (String lootTableType : lootTableConfig.getKeys(false)) {
+            if (!LootTableType.exists(lootTableType))
                 continue;
 
-            LootTableType type = LootTableType.valueOf(lootTable.toUpperCase());
+            LootTableType type = LootTableType.valueOf(lootTableType.toUpperCase());
 
             // Loop through the new loot table section.
-            for (String lootTableName : Objects.requireNonNull(lootTableConfig.getConfigurationSection(lootTable)).getKeys(false)) {
-                int weight = lootTableConfig.getInt(lootTable + "." + lootTableName);
+            for (String lootTableName : Objects.requireNonNull(lootTableConfig.getConfigurationSection(lootTableType)).getKeys(false)) {
+                int weight = lootTableConfig.getInt(lootTableType + "." + lootTableName);
                 LootTable table = CustomStructures.getInstance().getLootTableHandler().getLootTableByName(lootTableName);
-                table.addType(type);
+                Objects.requireNonNull(table, "The loot table named \"" + lootTableName + "\" was not found in the plugin config.");
                 lootTables.computeIfAbsent(type, k -> new RandomCollection<>()).add(weight, table);
             }
         }
@@ -347,13 +350,12 @@ public class StructureBuilder {
     /**
      * Add a loot table to the structure.
      *
+     * @param type      the container type which the loot table is bound to.
      * @param lootTable The loot table to add.
      * @param weight    The weight.
      */
-    public void addLootTable(LootTable lootTable, double weight) {
-        for (LootTableType type : lootTable.getTypes()) {
-            lootTables.computeIfAbsent(type, k -> new RandomCollection<>()).add(weight, lootTable);
-        }
+    public void addLootTable(LootTableType type, LootTable lootTable, double weight) {
+        lootTables.computeIfAbsent(type, k -> new RandomCollection<>()).add(weight, lootTable);
     }
 
     /**
