@@ -6,11 +6,16 @@ import com.ryandw11.structure.lootchest.LootChestTagType;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class LootProtect implements Listener {
 
@@ -25,7 +30,9 @@ public class LootProtect implements Listener {
             LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
             if (lootChestTag != null && !event.getPlayer().hasPermission("customstructures.breaklootchest")) {
                 event.setCancelled(true);
-                event.getPlayer().playSound(event.getPlayer(), Sound.ENTITY_CAT_STRAY_AMBIENT, 1F, 1F);
+                Player player = event.getPlayer();
+                player.playSound(player, Sound.ENTITY_CAT_STRAY_AMBIENT, 1F, 1F);
+                player.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(-1));
             }
         }
     }
@@ -37,14 +44,7 @@ public class LootProtect implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void preventEntityExplosion(EntityExplodeEvent event) {
-        for (Block block : event.blockList()) {
-            if (block.getState() instanceof Container container) {
-                LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
-                if (lootChestTag != null) {
-                    event.setCancelled(true);
-                }
-            }
-        }
+        preventExplosion(event.blockList());
     }
 
     /**
@@ -54,11 +54,17 @@ public class LootProtect implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void preventBlockExplosion(BlockExplodeEvent event) {
-        for (Block block : event.blockList()) {
+        preventExplosion(event.blockList());
+    }
+
+    private void preventExplosion(@NotNull List<Block> blocks) {
+        Iterator<Block> blockList = blocks.iterator();
+        while (blockList.hasNext()) {
+            Block block = blockList.next();
             if (block.getState() instanceof Container container) {
                 LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
                 if (lootChestTag != null) {
-                    event.setCancelled(true);
+                    blockList.remove();
                 }
             }
         }
