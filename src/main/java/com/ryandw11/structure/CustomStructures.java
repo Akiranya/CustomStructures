@@ -12,7 +12,10 @@ import com.ryandw11.structure.listener.LootProtect;
 import com.ryandw11.structure.listener.PlayerInteract;
 import com.ryandw11.structure.listener.PlayerJoin;
 import com.ryandw11.structure.loottables.LootTablesHandler;
-import com.ryandw11.structure.loottables.customitems.CustomItemManager;
+import com.ryandw11.structure.loottables.ComplexItemManager;
+import com.ryandw11.structure.loottables.PluginItemRegistry;
+import com.ryandw11.structure.loottables.pluginitems.ItemsAdderPluginItem;
+import com.ryandw11.structure.loottables.pluginitems.MMOItemsPluginItem;
 import com.ryandw11.structure.mythicalmobs.MMDisabled;
 import com.ryandw11.structure.mythicalmobs.MMEnabled;
 import com.ryandw11.structure.mythicalmobs.MythicalMobHook;
@@ -45,7 +48,7 @@ import java.util.*;
 public class CustomStructures extends JavaPlugin {
 
     public static CustomStructures plugin;
-    public File lootTableFile = new File(getDataFolder() + "/lootTables/lootTable.yml");
+    public File lootTableFile = new File(getDataFolder() + "/lootTables/demo.yml");
     public FileConfiguration lootTablesFC = YamlConfiguration.loadConfiguration(lootTableFile);
 
     private MythicalMobHook mythicalMobHook;
@@ -55,7 +58,7 @@ public class CustomStructures extends JavaPlugin {
     private NpcHandler npcHandler;
     private StructureHandler structureHandler;
     private LootTablesHandler lootTablesHandler;
-    private CustomItemManager customItemManager;
+    private ComplexItemManager complexItemManager;
     private IgnoreBlocks blockIgnoreManager;
     private AddonHandler addonHandler;
 
@@ -85,6 +88,7 @@ public class CustomStructures extends JavaPlugin {
         loadCommands();
         registerConfig();
         registerListeners();
+        registerPluginItems();
         setupBlockIgnore();
 
         // Small check to make sure that PlaceholderAPI is installed
@@ -131,7 +135,7 @@ public class CustomStructures extends JavaPlugin {
         exportResource(getDataFolder(), "signcommands.yml", "");
 
         // Configure the handlers and managers.
-        this.customItemManager = new CustomItemManager(this, new File(getDataFolder() + File.separator + "items" + File.separator + "customitems.yml"), new File(getDataFolder() + File.separator + "items"));
+        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "items" + File.separator + "customitems.yml"), new File(getDataFolder() + File.separator + "items"));
         this.signCommandsHandler = new SignCommandsHandler(getDataFolder(), this);
         this.npcHandler = new NpcHandler(getDataFolder(), plugin);
         this.lootTablesHandler = new LootTablesHandler();
@@ -279,6 +283,7 @@ public class CustomStructures extends JavaPlugin {
         this.structureHandler.cleanup();
         this.structureHandler = new StructureHandler(getConfig().getStringList("Structures"), this);
         this.lootTablesHandler = new LootTablesHandler();
+        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "items" + File.separator + "customitems.yml"), new File(getDataFolder() + File.separator + "items"));
     }
 
     /**
@@ -326,6 +331,14 @@ public class CustomStructures extends JavaPlugin {
     }
 
     /**
+     * Register your plugin items here.
+     */
+    private void registerPluginItems() {
+        PluginItemRegistry.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
+        PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
+    }
+
+    /**
      * Loaded needed files.
      */
     public void loadFiles() {
@@ -336,7 +349,7 @@ public class CustomStructures extends JavaPlugin {
                 e.printStackTrace();
             }
         } else {
-            saveResource("lootTables/lootTable.yml", false);
+            saveResource("lootTables/demo.yml", false);
         }
     }
 
@@ -418,10 +431,10 @@ public class CustomStructures extends JavaPlugin {
             if (!updatedStructures.isEmpty()) {
                 getLogger().info("Previous update attempt detected.");
                 getLogger().info(String.format("%s completed structure updates were found. If this is your first time updating" +
-                                " to this version of CustomStructures, then please delete the backup directory and restart the server.",
+                                               " to this version of CustomStructures, then please delete the backup directory and restart the server.",
                         updatedStructures.size()));
                 getLogger().info("The server will now wait 5 seconds to give you a chance to stop the server before " +
-                        "the update automatically continues. Press ctrl+c to cancel running the server.");
+                                 "the update automatically continues. Press ctrl+c to cancel running the server.");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {
@@ -473,7 +486,7 @@ public class CustomStructures extends JavaPlugin {
                     getLogger().severe(String.format("An error has occurred when updating %s:", s));
                     ex.printStackTrace();
                     getLogger().severe("After fixing the error, restart the server for the plugin to continue updating" +
-                            " from where it left off.");
+                                       " from where it left off.");
                     return;
                 }
             }
@@ -483,7 +496,7 @@ public class CustomStructures extends JavaPlugin {
 
             getLogger().info("Successfully updated all structure files to config version 7.");
             getLogger().info("Please delete the backup folder that was created in the CustomStructures directory" +
-                    " after you confirm everything was updated correctly and restart the server to update to the latest config version (8).");
+                             " after you confirm everything was updated correctly and restart the server to update to the latest config version (8).");
         }
         // Convert to config version 8. (Only change is upper-casing File for SubSchematics)
         if (ver < 8) {
@@ -540,10 +553,10 @@ public class CustomStructures extends JavaPlugin {
             if (!updatedStructures.isEmpty()) {
                 getLogger().info("Previous update attempt detected.");
                 getLogger().info(String.format("%s completed structure updates were found. If this is your first time updating" +
-                                " to this version of CustomStructures, then please delete the backup directory and restart the server.",
+                                               " to this version of CustomStructures, then please delete the backup directory and restart the server.",
                         updatedStructures.size()));
                 getLogger().info("The server will now wait 5 seconds to give you a chance to stop the server before " +
-                        "the update automatically continues. Press ctrl+c to cancel running the server.");
+                                 "the update automatically continues. Press ctrl+c to cancel running the server.");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {
@@ -571,7 +584,7 @@ public class CustomStructures extends JavaPlugin {
                             getLogger().severe(String.format("An error has occurred when attempting to update structure %s!", s));
                             getLogger().severe(String.format("Cannot find 'file' option on %s when update the SubSchematics property!", struct));
                             getLogger().severe("After fixing the error, restart the server for the plugin to continue updating" +
-                                    " from where it left off.");
+                                               " from where it left off.");
                             return;
                         }
                         section.set("File", section.getString("file"));
@@ -594,7 +607,7 @@ public class CustomStructures extends JavaPlugin {
                     getLogger().severe(String.format("An error has occurred when updating %s:", s));
                     ex.printStackTrace();
                     getLogger().severe("After fixing the error, restart the server for the plugin to continue updating" +
-                            " from where it left off.");
+                                       " from where it left off.");
                     return;
                 }
             }
@@ -604,7 +617,7 @@ public class CustomStructures extends JavaPlugin {
 
             getLogger().info("Successfully updated all structure files to the latest version (8).");
             getLogger().info("Please delete the backup folder that was created in the CustomStructures directory" +
-                    " after you confirm everything was updated correctly.");
+                             " after you confirm everything was updated correctly.");
         }
     }
 
@@ -623,7 +636,7 @@ public class CustomStructures extends JavaPlugin {
             FileUtils.copyFile(config, configBackup);
         } catch (IOException ex) {
             getLogger().severe("A critical error was encountered when attempting to update plugin configuration" +
-                    " files!");
+                               " files!");
             getLogger().severe("Unable to create a backup for " + file);
 
             return false;
@@ -642,12 +655,12 @@ public class CustomStructures extends JavaPlugin {
     }
 
     /**
-     * Get the custom item manager.
+     * Get the Complex Items manager.
      *
-     * @return The custom item manager.
+     * @return the complex item manager
      */
-    public CustomItemManager getCustomItemManager() {
-        return customItemManager;
+    public ComplexItemManager getComplexItemManager() {
+        return complexItemManager;
     }
 
     /**

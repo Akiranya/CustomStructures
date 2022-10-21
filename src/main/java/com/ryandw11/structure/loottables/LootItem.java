@@ -1,187 +1,92 @@
 package com.ryandw11.structure.loottables;
 
-import com.ryandw11.structure.exceptions.LootTableException;
 import com.ryandw11.structure.utils.NumberStylizer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an Item within a loot table.
+ * Represents a loot item within a loot table.
  */
-public class LootItem {
+public abstract class LootItem {
 
-    private int weight;
-    private final String amount;
-    private final Map<String, String> enchants;
-    private ItemStack item;
+    private int weight = 1; // TODO To be removed - it's been implemented in LootTable#randomCollection
+    private String amount = "1";
 
-    /**
-     * This is for normal loot table items.
-     *
-     * @param customName The custom name.
-     * @param type       The type.
-     * @param amount     The amount.
-     * @param weight     The weight.
-     * @param lore       The lore.
-     * @param enchants   The enchants.
-     */
-    public LootItem(String customName, String type, int amount, int weight, List<String> lore, Map<String, String> enchants) {
-        this.weight = weight;
-        try {
-            this.item = new ItemStack(Material.valueOf(type.toUpperCase()));
-        } catch (IllegalArgumentException ex) {
-            throw new LootTableException("Unknown Material Type: " + type);
-        }
-        this.amount = amount + "";
-        this.item.setAmount(amount);
-
-        if (customName != null) { //Catch for people who do not want different names
-            ItemMeta meta = Objects.requireNonNull(this.item.getItemMeta());
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', customName));
-            this.item.setItemMeta(meta);
-        }
-
-        if (!lore.isEmpty()) {
-            lore = lore.stream().map(s -> ChatColor.translateAlternateColorCodes('&', s)).collect(Collectors.toList());
-            Objects.requireNonNull(this.item.getItemMeta()).setLore(lore);
-        }
-
-        this.enchants = enchants;
+    protected LootItem() {
+        // Take default for weight and amount
     }
 
-    /**
-     * This is for normal loot table items.
-     *
-     * @param customName The custom name.
-     * @param type       The type.
-     * @param amount     The amount (in stylized form).
-     * @param weight     The weight.
-     * @param lore       The lore.
-     * @param enchants   The enchants.
-     */
-    public LootItem(String customName, String type, String amount, int weight, List<String> lore, Map<String, String> enchants) {
+    protected LootItem(int weight, @NotNull String amount) {
         this.weight = weight;
-        try {
-            this.item = new ItemStack(Material.valueOf(type.toUpperCase()));
-        } catch (IllegalArgumentException ex) {
-            throw new LootTableException("Unknown Material Type: " + type);
-        }
         this.amount = amount;
-        this.item.setAmount(NumberStylizer.getStylizedInt(amount));
-        ItemMeta meta = Objects.requireNonNull(this.item.getItemMeta());
-        if (customName != null) { //Catch for people who do not want different names
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', customName));
-
-        }
-
-        if (!lore.isEmpty()) {
-            lore = lore.stream().map(s -> ChatColor.translateAlternateColorCodes('&', s)).collect(Collectors.toList());
-            meta.setLore(lore);
-        }
-
-        this.item.setItemMeta(meta);
-        this.enchants = enchants;
     }
 
     /**
-     * This is for use with custom items.
+     * Get the weight of this loot item.
      *
-     * @param itemStack The item stack to use.
-     * @param amount    The amount to use.
-     * @param weight    The weight to use.
-     */
-    public LootItem(ItemStack itemStack, int amount, int weight) {
-        this.weight = weight;
-        this.item = itemStack.clone();
-        this.item.setAmount(amount);
-        this.amount = amount + "";
-        this.enchants = new HashMap<>();
-    }
-
-    /**
-     * This is for use with custom items.
-     *
-     * @param itemStack The item stack to use.
-     * @param amount    The amount to use.
-     * @param weight    The weight to use.
-     */
-    public LootItem(ItemStack itemStack, String amount, int weight) {
-        this.weight = weight;
-        this.item = itemStack.clone();
-        this.item.setAmount(1);
-        this.amount = amount;
-        this.enchants = new HashMap<>();
-    }
-
-    /**
-     * Apply the stylized enchantments and amount to the itemstack.
-     *
-     * @param item The item stack to apply the stats to.
-     */
-    private void applyStats(ItemStack item) {
-        item.setAmount(NumberStylizer.getStylizedInt(amount));
-        for (String enchantName : enchants.keySet()) {
-            int level = NumberStylizer.getStylizedInt(enchants.get(enchantName));
-            Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
-            if (enchantment == null)
-                throw new LootTableException("Invalid Enchantment: " + enchantName);
-            if (item.getItemMeta() instanceof EnchantmentStorageMeta enchantmentStorageMeta) {
-                enchantmentStorageMeta.addStoredEnchant(enchantment, level, true);
-                item.setItemMeta(enchantmentStorageMeta);
-            } else {
-                item.addUnsafeEnchantment(enchantment, level);
-            }
-        }
-    }
-
-    /**
-     * Get the weight of the loot item.
-     *
-     * @return The weight of the loot item.
+     * @return the weight of this loot item
      */
     public int getWeight() {
         return weight;
     }
 
     /**
-     * Set the weight of the loot item.
+     * Get the amount of this loot item. The return value may vary on each call.
      *
-     * @param weight The weight of the loot item to set.
+     * @return the amount of this loot item
      */
+    public int getAmount() {
+        return NumberStylizer.getStylizedInt(amount);
+    }
+
     public void setWeight(int weight) {
         this.weight = weight;
     }
 
-    /**
-     * Get the item stack.
-     *
-     * @return The clone of the item stack with the applied stats.
-     */
-    public ItemStack getItemStack() {
-        ItemStack cloneStack = item.clone();
-        applyStats(cloneStack);
-        return cloneStack;
+    public void setAmount(@NotNull String amount) {
+        this.amount = amount;
     }
 
     /**
-     * Set the base item stack.
+     * Get the item stack of this loot item.
+     * <p>
+     * The implementation may return a different version of the loot item on each call in the perspective of amount,
+     * lore, display name, enchantment level and attribute modifiers, particularly for the items that should vary
+     * between different players (such as items with random RPG stats).
      *
-     * @param item The item to set the loot item to.
+     * @return a newly generated item stack of this loot item
      */
-    public void setItem(ItemStack item) {
-        this.item = item;
-    }
+    abstract public @NotNull ItemStack getItemStack();
+
+    /**
+     * Get the item stack of this loot item.
+     * <p>
+     * This method may be useful if the loot item generation needs player's information.
+     *
+     * @param player the player who triggers the loot generation
+     * @return a newly generated item stack of this loot item
+     * @see #getItemStack()
+     */
+    abstract public @NotNull ItemStack getItemStack(Player player);
+
+    /**
+     * Get the base material of this loot item. The returned material only makes sense if this is an instance of
+     * CustomItem or SimpleItem. When it is PluginItem, the returned material is generally non-meaningful.
+     *
+     * @return the material of this loot item
+     */
+    abstract public @NotNull Material getMaterial();
+
+    /**
+     * Check whether the given item stack is the same as this loot item.
+     * <p>
+     * The exact behaviour is implementation-defined. Check the implementation for details.
+     *
+     * @param other the item stack to match with
+     * @return true if given item stack is the same as this loot item
+     */
+    abstract public boolean matches(ItemStack other);
 
 }

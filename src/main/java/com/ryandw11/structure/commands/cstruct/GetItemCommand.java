@@ -38,13 +38,12 @@ public class GetItemCommand implements SubCommand {
                 sender.sendMessage(ChatColor.RED + "You do not have permission for this command!");
                 return true;
             }
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player p)) {
                 sender.sendMessage(ChatColor.RED + "This command is for players only!");
                 return true;
             }
-            Player p = (Player) sender;
             String key = args[0];
-            ItemStack item = plugin.getCustomItemManager().getItem(key);
+            ItemStack item = plugin.getComplexItemManager().getItem(key);
             if (item == null) {
                 p.sendMessage(ChatColor.RED + "An item with that key was not found!");
                 return true;

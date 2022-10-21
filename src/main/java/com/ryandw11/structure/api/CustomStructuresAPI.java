@@ -3,7 +3,7 @@ package com.ryandw11.structure.api;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.structaddon.CustomStructureAddon;
 import com.ryandw11.structure.loottables.LootTablesHandler;
-import com.ryandw11.structure.loottables.customitems.CustomItemManager;
+import com.ryandw11.structure.loottables.ComplexItemManager;
 import com.ryandw11.structure.structure.StructureHandler;
 
 /**
@@ -85,14 +85,14 @@ public class CustomStructuresAPI {
      *
      * @return The custom item manager.
      */
-    public CustomItemManager getCustomItemManager() {
-        return plugin.getCustomItemManager();
+    public ComplexItemManager getComplexItemManager() {
+        return plugin.getComplexItemManager();
     }
 
     /**
      * Get the schematics folder.
      *
-     * @return The schematics folder.
+     * @return The schematics' folder.
      */
     public String getSchematicsFolder() {
         return plugin.getDataFolder() + "/schematics/";

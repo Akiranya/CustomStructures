@@ -1,0 +1,94 @@
+#
+# LootTable Example
+#
+# You can create as many files as you want, each file represents a loot table.
+
+# Determines how many loot items will be chosen from the item list bellow.
+Rolls: 3
+
+# Loot items
+Items:
+
+  # If "Type" is a valid material type such as "IRON_SWORD" and "DIAMOND_BLOCK", then
+  # you can specify "Name", "CustomModelData", "Lore", "Enchantments" for the loot item.
+  custom-item-example:
+    # (Required) Material type https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+    Type: 'IRON_SWORD'
+    # (Optional. Default: None) Item custom name, you can use color codes (https://minecraft.tools/en/color-code.php)
+    Name: '&1Test'
+    # (Optional. Default: None) Custom model data
+    CustomModelData: 1000
+    # (Optional. Default: None) Item lore
+    Lore:
+      - '&cExample Lore 1'
+    # (Optional. Default: None) List of enchantments, one item can have multiple enchantments.
+    Enchantments:
+      # Enchantment name and level (As of 1.5.4.2, it is using the Minecraft namespaced keys with '_' instead of spaces)
+      looting: 1
+      sharpness: 1
+    # (Optional. Default: 1) Number of items per stack.
+    Amount: 1
+    # (Required) Determines how often this entry will be chosen out of all the entries in the list.
+    Weight: 10
+
+  # Above example continued.
+  # You don't have to specify all values.
+  # Here, we only specified the "Name".
+  # All other values are by default.
+  simple-item-example:
+    # (Required)
+    Type: 'IRON_HELMET'
+    # (Optional. Default: None)
+    Name: '&2Test2'
+    # (Required)
+    Weight: 20
+
+  # Above example continued.
+  ranged-amount-example:
+    # (Required)
+    Type: 'ROTTEN_FLESH'
+    # (Optional. Default: None)
+    Name: '&3Test3'
+    # (Optional. Default: 1) The "Amount" option supports ranged numbers. See the wiki for details.
+    Amount: '[3:8]'
+    # (Required)
+    Weight: 20
+
+  # This is a Complex Item example.
+  # You will need to use it if it's not possible to write an item in this config.
+  # Basic usage: You first register a Complex Item by using the in-game command /addItem.
+  # Then in here you write "Type: COMPLEX" and "Key: {key}" as the key you just defined.
+  # Only the options "Key", "Amount" and "Weight" are available if you use "Type: COMPLEX".
+  complex-item-example:
+    # (Required)
+    Type: 'COMPLEX'
+    # (Required) The key of this Complex Item.
+    Key: item1
+    # (Optional. Default: 1)
+    Amount: 5
+    # (Required)
+    Weight: 30
+
+  # This is ItemsAdder item example.
+  # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
+  items-adder-plugin-example:
+    # (Required) The "Type" option needs to be "PLUGIN".
+    Type: 'PLUGIN'
+    # (Required) The ItemID of this plugin item. Must be in the form of "itemsadder:{namespace}:{itemId}"
+    ID: itemsadder:iasurvival:ruby
+    # (Optional. Default: 1)
+    Amount: 1
+    # (Required)
+    Weight: 100
+
+  # This is MMOItems item example.
+  # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
+  mmoitems-plugin-example:
+    # (Required) The "Type" option needs to be "PLUGIN".
+    Type: 'PLUGIN'
+    # (Required) The ItemID of this plugin item. Must be "mmoitems:{itemType}:{itemId}".
+    ID: mmoitems:sword:cutlass
+    # (Optional. Default: 1)
+    Amount: 1
+    # (Required)
+    Weight: 100

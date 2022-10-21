@@ -34,16 +34,15 @@ public class AddItemCommand implements SubCommand {
                 return true;
             }
             sender.sendMessage(ChatColor.RED + "You must specify a unique key to call the item by.");
-        } else if (args.length == 1) {
+        } else {
             if (!sender.hasPermission("customstructures.additem")) {
                 sender.sendMessage(ChatColor.RED + "You do not have permission for this command!");
                 return true;
             }
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player p)) {
                 sender.sendMessage(ChatColor.RED + "This command is for players only!");
                 return true;
             }
-            Player p = (Player) sender;
             String key = args[0];
             ItemStack item = p.getInventory().getItemInMainHand();
             item.setAmount(1);
@@ -51,7 +50,16 @@ public class AddItemCommand implements SubCommand {
                 p.sendMessage(ChatColor.RED + "You must be holding an item to use this command!");
                 return true;
             }
-            if (!plugin.getCustomItemManager().addItem(key, item)) {
+            if (!plugin.getComplexItemManager().addItem(key, item)) {
+                if (args.length == 2) {
+                    String overwrite = args[1];
+                    if (overwrite.equalsIgnoreCase("--overwrite")) {
+                        plugin.getComplexItemManager().removeItem(key);
+                        plugin.getComplexItemManager().addItem(key, item);
+                        p.sendMessage(ChatColor.GREEN + "Successfully added the custom item to the list (overwriting).");
+                        return true;
+                    }
+                }
                 p.sendMessage(ChatColor.RED + "That key already exists!");
             } else {
                 p.sendMessage(ChatColor.GREEN + "Successfully added the custom item to the list.");

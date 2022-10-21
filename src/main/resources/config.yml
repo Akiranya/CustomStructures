@@ -1,14 +1,15 @@
 configversion: 8
-#========================================
-#             Custom Structures    
-#========================================
-#Wiki: https://github.com/ryandw11/CustomStructures/wiki
 
-#Log extra information in console when generating structures
+#==========================================
+#             Custom Structures    
+#==========================================
+# Wiki: https://github.com/ryandw11/CustomStructures/wiki
+
+# Log extra information in console when generating structures
 debug: false
 
-#bstats is where data is sent. https://bstats.org/plugin/bukkit/CustomStructures .
-#Here is some more information on it like what it collects and how to disable it all together and not just for this plugin.
+# bstats is where data is sent. https://bstats.org/plugin/bukkit/CustomStructures .
+# Here is some more information on it like what it collects and how to disable it all together and not just for this plugin.
 # https://bstats.org/getting-started
 bstats: true
 

@@ -34,18 +34,17 @@ public class CheckKeyCommand implements SubCommand {
             sender.sendMessage(ChatColor.RED + "You do not have permission for this command!");
             return true;
         }
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             sender.sendMessage(ChatColor.RED + "This command is for players only!");
             return true;
         }
-        Player p = (Player) sender;
         ItemStack item = p.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR) {
             p.sendMessage(ChatColor.RED + "You must be holding an item to use this command!");
             return true;
         }
-        for (String items : Objects.requireNonNull(plugin.getCustomItemManager().getConfig().getConfigurationSection("")).getKeys(false)) {
-            if (item.isSimilar(plugin.getCustomItemManager().getItem(items))) {
+        for (String items : Objects.requireNonNull(plugin.getComplexItemManager().getConfig().getConfigurationSection("")).getKeys(false)) {
+            if (item.isSimilar(plugin.getComplexItemManager().getItem(items))) {
                 p.sendMessage(ChatColor.GREEN + "The item you are holding has a key of: " + ChatColor.GOLD + items);
                 return true;
             }
