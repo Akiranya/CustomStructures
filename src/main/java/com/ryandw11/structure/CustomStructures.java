@@ -283,7 +283,7 @@ public class CustomStructures extends JavaPlugin {
         this.structureHandler.cleanup();
         this.structureHandler = new StructureHandler(getConfig().getStringList("Structures"), this);
         this.lootTablesHandler = new LootTablesHandler();
-        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "items" + File.separator + "customitems.yml"), new File(getDataFolder() + File.separator + "items"));
+        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "internal" + File.separator + "complexitems.yml"), new File(getDataFolder() + File.separator + "internal"));
     }
 
     /**
@@ -350,6 +350,7 @@ public class CustomStructures extends JavaPlugin {
             }
         } else {
             saveResource("lootTables/demo.yml", false);
+            saveResource("internal/complexitems.yml", false);
         }
     }
 
