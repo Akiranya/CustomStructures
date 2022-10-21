@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /*
  * When implementing this, put CustomStructures as softdepend in your plugin.yml!
@@ -29,16 +30,16 @@ public class MMOItemsPluginItem extends PluginItem {
     @Override
     public @NotNull ItemStack getItemStack() {
         // This may generate a different version on each call if this item enabled RNG stats
-        ItemStack itemStack = getMMOItemTemplate().newBuilder().build().newBuilder().getItemStack();
-        itemStack.setAmount(getAmount());
+        ItemStack itemStack = getMMOItemTemplate().newBuilder().build().newBuilder().build();
+        Objects.requireNonNull(itemStack).setAmount(getAmount());
         return itemStack;
     }
 
     @Override
     public @NotNull ItemStack getItemStack(Player player) {
         // This may generate a different version on each call depending on the given player
-        ItemStack itemStack = getMMOItemTemplate().newBuilder(player).build().newBuilder().getItemStack();
-        itemStack.setAmount(getAmount());
+        ItemStack itemStack = getMMOItemTemplate().newBuilder(player).build().newBuilder().build();
+        Objects.requireNonNull(itemStack).setAmount(getAmount());
         return itemStack;
     }
 
@@ -66,13 +67,13 @@ public class MMOItemsPluginItem extends PluginItem {
         String[] itemId = getItemId().trim().toUpperCase(Locale.ROOT).split(":");
         Type type = MMOItems.plugin.getTypes().get(itemId[0]);
         if (type == null) {
-            throw new LootTableException("[%s] Could not found item type: %s".formatted(getPlugin(), itemId[0]));
+            throw new LootTableException("[MMOItems] Could not found item type: %s".formatted(itemId[0]));
         }
         MMOItemTemplate mmoItemTemplate = MMOItems.plugin.getTemplates().getTemplate(type, itemId[1]);
         if (mmoItemTemplate != null) {
             return mmoItemTemplate;
         } else {
-            throw new LootTableException("[%s] Could not found item: %s (type: %s)".formatted(getPlugin(), itemId[1], itemId[0]));
+            throw new LootTableException("[MMOItems] Could not found item: %s (type: %s)".formatted(itemId[1], itemId[0]));
         }
     }
 }
