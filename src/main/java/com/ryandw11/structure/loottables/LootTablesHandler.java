@@ -7,55 +7,55 @@ import com.ryandw11.structure.exceptions.LootTableException;
 import java.util.*;
 
 /**
- * This handles the loot tables.
- *
- * <p>Get this handler via {@link CustomStructuresAPI#getLootTableHandler()}.</p>
+ * This handles the loot tables.*
+ * <p>
+ * Get this handler via {@link CustomStructuresAPI#getLootTableHandler()}.
  */
 public class LootTablesHandler {
 
     private final Map<String, LootTable> lootTables;
 
     public LootTablesHandler() {
-        this.lootTables = new HashMap<>();
+        lootTables = new HashMap<>();
     }
 
     /**
      * Get the loot table by the name.
-     * <p>This will automatically load a loot table</p>
+     * <p>
+     * This will automatically load a loot table
      *
-     * @param lootTableName The name of the loot table.
-     * @return The loot table. This will return null if the loot table does not exist or loads with an error.
+     * @param lootTableName the name of the loot table
+     * @return the loot table, or null if the loot table does not exist or loads with an error
      */
     public LootTable getLootTableByName(String lootTableName) {
-        if (!this.lootTables.containsKey(lootTableName)) {
+        if (!lootTables.containsKey(lootTableName)) {
             try {
-                this.lootTables.put(lootTableName, new LootTable(lootTableName));
+                lootTables.put(lootTableName, new LootTable(lootTableName));
             } catch (LootTableException ex) {
                 CustomStructures.getInstance().getLogger().severe("There seems to be a problem with the '" +
-                        lootTableName + "' loot table:");
+                                                                  lootTableName + "' loot table:");
                 CustomStructures.getInstance().getLogger().severe(ex.getMessage());
             }
         }
-        return this.lootTables.get(lootTableName);
+        return lootTables.get(lootTableName);
     }
 
     /**
-     * Get the map of loot tables.
+     * Get an unmodifiable map of the loot tables.
      *
-     * <p>This returns an unmodifiable map.</p>
-     *
-     * @return The unmodifiable map of loot tables.
+     * @return an unmodifiable map of loot tables
      */
     public Map<String, LootTable> getLootTables() {
         return Collections.unmodifiableMap(lootTables);
     }
 
     /**
-     * Get a list with the names of all loot tables.
+     * Get a copy of mutable list with the names of all loot tables.
      *
-     * @return The list with names of all loot tables.
+     * @return a copy of list with names of all loot tables
      */
     public List<String> getLootTablesNames() {
-        return new ArrayList<>(this.lootTables.keySet());
+        return new ArrayList<>(lootTables.keySet());
     }
+
 }

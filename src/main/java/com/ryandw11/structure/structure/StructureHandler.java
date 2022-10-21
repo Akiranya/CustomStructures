@@ -9,15 +9,24 @@ import com.ryandw11.structure.utils.Pair;
 import org.bukkit.Location;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
  * This handler manages the list of active structures.
- *
- * <p>You can access this handler from {@link CustomStructuresAPI#getStructureHandler()} or {@link CustomStructures#getStructureHandler()}.</p>
- *
- * <p><b>Note:</b> Do not store a long term instance of this class as it can be nulled when the /cstruct reload command is done.</p>
+ * <p>
+ * You can access this handler from {@link CustomStructuresAPI#getStructureHandler()} or
+ * {@link CustomStructures#getStructureHandler()}.
+ * <p>
+ * <b>Note:</b> Do not store a long term instance of this class as it can be null when the {@code /cstruct reload}
+ * command is done.
  */
 public class StructureHandler {
 
@@ -32,7 +41,9 @@ public class StructureHandler {
 
     /**
      * Constructor for the structure handler.
-     * <p>This is for internal use only. Use {@link CustomStructuresAPI#getStructureHandler()} or {@link CustomStructures#getStructureHandler()} instead.</p>
+     * <p>
+     * This is for internal use only. Use {@link CustomStructuresAPI#getStructureHandler()} or
+     * {@link CustomStructures#getStructureHandler()} instead.
      *
      * @param stringStructs The list of structures.
      * @param cs            The plugin.
@@ -93,7 +104,7 @@ public class StructureHandler {
      * @return The structure. (Returns null if the structure is not found).
      */
     public Structure getStructure(String name) {
-        List<Structure> result = structures.stream().filter(struct -> struct.getName().equals(name)).collect(Collectors.toList());
+        List<Structure> result = structures.stream().filter(struct -> struct.getName().equals(name)).toList();
         if (result.isEmpty())
             return null;
         return result.get(0);
@@ -110,12 +121,12 @@ public class StructureHandler {
     }
 
     /**
-     * Get the names of the structures.
+     * Get a modifiable copy of the names of the structures.
      *
-     * @return The names of the structures.
+     * @return the names of the structures
      */
     public List<String> getStructureNames() {
-        return names;
+        return new ArrayList<>(names);
     }
 
     /**
