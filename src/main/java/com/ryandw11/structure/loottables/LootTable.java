@@ -2,7 +2,6 @@ package com.ryandw11.structure.loottables;
 
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.exceptions.LootTableException;
-import com.ryandw11.structure.utils.Pair;
 import com.ryandw11.structure.utils.RandomCollection;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -131,8 +130,8 @@ public class LootTable {
 
         for (String itemId : itemsSection.getKeys(false)) {
             ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemId);
-            Pair<LootItem, Integer> lootItem = loadItemFromConfig(itemId, itemSection);
-            randomCollection.add(lootItem.getRight(), lootItem.getLeft());
+            LootItem lootItem = loadItemFromConfig(itemId, itemSection);
+            randomCollection.add(lootItem.getWeight(), lootItem);
         }
 
     }
@@ -142,9 +141,9 @@ public class LootTable {
      *
      * @param itemId      the item ID
      * @param itemSection the configuration section of the item
-     * @return a pair, where left is the loaded LootItem and right is its Weight
+     * @return the loaded LootItem
      */
-    private @NotNull Pair<LootItem, Integer> loadItemFromConfig(@NotNull String itemId, @Nullable ConfigurationSection itemSection) {
+    private @NotNull LootItem loadItemFromConfig(@NotNull String itemId, @Nullable ConfigurationSection itemSection) {
         if (itemSection == null)
             throw new LootTableException("Invalid file format for loot table at: " + name + "/" + itemId);
         if (!itemSection.contains("Type") || !itemSection.isString("Type"))
@@ -217,7 +216,7 @@ public class LootTable {
             }
         }
 
-        return Pair.of(lootItem, weight);
+        return lootItem;
     }
 
 }

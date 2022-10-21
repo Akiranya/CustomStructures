@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class LootItem {
 
-    private int weight = 1; // TODO To be removed - it's been implemented in LootTable#randomCollection
+    private int weight = 1;
     private String amount = "1";
 
     protected LootItem() {
-        // Take default for weight and amount
+        // Take default values for weight and amount
     }
 
     protected LootItem(int weight, @NotNull String amount) {
