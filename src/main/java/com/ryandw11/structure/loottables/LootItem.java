@@ -61,9 +61,13 @@ public abstract class LootItem {
     abstract public @NotNull ItemStack getItemStack();
 
     /**
-     * Get the item stack of this loot item.
+     * Get the item stack of this loot item with the consideration of the given player.
      * <p>
-     * This method may be useful if the loot item generation needs player's information.
+     * This method is preferred over {@link #getItemStack()} because it generates the item stack with the consideration
+     * of the player's data. It may be useful for certain implementation of the
+     * {@link com.ryandw11.structure.loottables.LootItem}, which can generate unique items for different players.
+     * Navigate the subclasses of {@link com.ryandw11.structure.loottables.LootItem} using your IDE for the details of
+     * implementation.
      *
      * @param player the player who triggers the loot generation
      * @return a newly generated item stack of this loot item

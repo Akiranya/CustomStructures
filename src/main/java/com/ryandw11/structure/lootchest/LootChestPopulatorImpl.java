@@ -92,11 +92,11 @@ class LootChestPopulatorImpl implements LootChestPopulator {
 
         for (int i = 0; i < lootTable.getRolls(); i++) {
             if (container.getInventory() instanceof FurnaceInventory furnaceInventory) {
-                replaceFurnaceContent(lootTable, furnaceInventory); // This also applies to Smoker/BlastFurnace
+                replaceFurnaceContent(player, lootTable, furnaceInventory); // This also applies to Smoker/BlastFurnace
             } else if (container.getInventory() instanceof BrewerInventory brewerInventory) {
-                replaceBrewerContent(lootTable, brewerInventory);
+                replaceBrewerContent(player, lootTable, brewerInventory);
             } else {
-                replaceChestContent(lootTable, new Random(), container.getInventory());
+                replaceChestContent(player, lootTable, new Random(), container.getInventory());
             }
         }
     }
@@ -108,9 +108,9 @@ class LootChestPopulatorImpl implements LootChestPopulator {
      * @param random             The value of random.
      * @param containerInventory The container inventory
      */
-    private void replaceChestContent(LootTable lootTable, Random random, Inventory containerInventory) {
+    private void replaceChestContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull Random random, @NotNull Inventory containerInventory) {
         ItemStack[] containerContent = containerInventory.getContents();
-        ItemStack randomItem = lootTable.getRandomWeightedItem();
+        ItemStack randomItem = lootTable.getRandomWeightedItem(player);
         for (int j = 0; j < randomItem.getAmount(); j++) {
             boolean done = false;
             int attempts = 0;
@@ -149,8 +149,8 @@ class LootChestPopulatorImpl implements LootChestPopulator {
      * @param lootTable          The loot table to populate the brewer with.
      * @param containerInventory The inventory of the brewer.
      */
-    private void replaceBrewerContent(LootTable lootTable, BrewerInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem();
+    private void replaceBrewerContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull BrewerInventory containerInventory) {
+        ItemStack item = lootTable.getRandomWeightedItem(player);
         ItemStack ingredient = containerInventory.getIngredient();
         ItemStack fuel = containerInventory.getFuel();
 
@@ -167,8 +167,8 @@ class LootChestPopulatorImpl implements LootChestPopulator {
      * @param lootTable          The loot table selected for the furnace.
      * @param containerInventory The inventory of the furnace.
      */
-    private void replaceFurnaceContent(LootTable lootTable, FurnaceInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem();
+    private void replaceFurnaceContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull FurnaceInventory containerInventory) {
+        ItemStack item = lootTable.getRandomWeightedItem(player);
         ItemStack result = containerInventory.getResult();
         ItemStack fuel = containerInventory.getFuel();
         ItemStack smelting = containerInventory.getSmelting();
@@ -190,7 +190,7 @@ class LootChestPopulatorImpl implements LootChestPopulator {
      * @param second The second item.
      * @return If the two items have the same metadata and type.
      */
-    private boolean isSameItem(ItemStack first, ItemStack second) {
+    private boolean isSameItem(@NotNull ItemStack first, @NotNull ItemStack second) {
         ItemMeta firstMeta = first.getItemMeta();
         ItemMeta secondMeta = second.getItemMeta();
         return first.getType().equals(second.getType()) && Objects.equals(firstMeta, secondMeta);

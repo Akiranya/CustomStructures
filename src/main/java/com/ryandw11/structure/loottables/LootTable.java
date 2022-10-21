@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,9 +87,27 @@ public class LootTable {
      * Get a random item from the table.
      *
      * @return a random item
+     * @see #getRandomWeightedItem(org.bukkit.entity.Player)
      */
     public @NotNull ItemStack getRandomWeightedItem() {
         return randomCollection.next().getItemStack();
+    }
+
+    /**
+     * Get a random item from the loot table.
+     * <p>
+     * This method is preferred over {@link #getRandomWeightedItem()} because it <b>can</b> generate an item stack with
+     * the consideration of the player's data.
+     *
+     * @return a random item
+     * @see #getRandomWeightedItem()
+     * @see com.ryandw11.structure.loottables.LootItem#getItemStack(org.bukkit.entity.Player)
+     */
+    public @NotNull ItemStack getRandomWeightedItem(@Nullable Player player) {
+        if (player == null) { // Fallback
+            return getRandomWeightedItem();
+        }
+        return randomCollection.next().getItemStack(player);
     }
 
     /**
