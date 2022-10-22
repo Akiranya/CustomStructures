@@ -27,8 +27,9 @@ import java.util.Set;
  * Represents a loot item that has custom name, lore, enchantments and custom model data.
  */
 @SuppressWarnings("unused")
-public class CustomItem extends SimpleItem {
+public class CustomItem extends LootItem {
 
+    @NotNull private final Material mat;
     @Nullable private final String name;
     @NotNull private final List<String> lore;
     @NotNull private final Map<String, String> enchantments;
@@ -53,7 +54,8 @@ public class CustomItem extends SimpleItem {
             @NotNull List<String> lore,
             @NotNull Map<String, String> enchantments,
             int customModelData) {
-        super(weight, amount, mat);
+        super(weight, amount);
+        this.mat = mat;
         this.name = name;
         this.lore = lore;
         this.enchantments = enchantments;
@@ -96,6 +98,11 @@ public class CustomItem extends SimpleItem {
     @Override
     public @NotNull ItemStack getItemStack(Player player) {
         return getItemStack();
+    }
+
+    @Override
+    public @NotNull Material getMaterial() {
+        return mat;
     }
 
     @Override
