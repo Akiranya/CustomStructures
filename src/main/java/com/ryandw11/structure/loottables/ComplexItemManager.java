@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Manages the custom items defined for the loot tables.
+ * Manages the Complex Items defined for the loot tables.
  *
  * <p>Get this handler from {@link CustomStructuresAPI#getComplexItemManager()}</p>
  */
