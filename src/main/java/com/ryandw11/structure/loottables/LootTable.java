@@ -144,6 +144,9 @@ public class LootTable {
      * @return the loaded LootItem
      */
     private @NotNull LootItem loadItemFromConfig(@NotNull String itemId, @Nullable ConfigurationSection itemSection) {
+
+        // ---- Validate basic config values ----
+
         if (itemSection == null)
             throw new LootTableException("Invalid file format for loot table at: " + name + "/" + itemId);
         if (!itemSection.contains("Type") || !itemSection.isString("Type"))
@@ -151,11 +154,15 @@ public class LootTable {
         if (!itemSection.isInt("Weight") || itemSection.getInt("Weight") < 1)
             throw new LootTableException("Invalid file format for loot table! \"Weight\" is not an integer at: " + name + "/" + itemId);
 
-        @NotNull String type = Objects.requireNonNull(itemSection.getString("Type")); // Already checked nullability in validateItemConfig(itemId)
+        // ---- Get common config to all types of LootItem ----
+
+        @NotNull String type = Objects.requireNonNull(itemSection.getString("Type")); // Already checked nullability
         @NotNull String amount = itemSection.getString("Amount", "1"); // This is optional so give it a def
-        int weight = itemSection.getInt("Weight"); // Already checked nullability in validateItemConfig(itemId)
+        int weight = itemSection.getInt("Weight"); // Already checked nullability
 
         LootItem lootItem; // The loot item to return
+
+        // ---- Construct LootItem depending on "Type" ----
 
         if (type.equalsIgnoreCase("COMPLEX")) {
             // ---- Type = "COMPLEX" ----
