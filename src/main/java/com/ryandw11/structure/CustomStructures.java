@@ -135,7 +135,7 @@ public class CustomStructures extends JavaPlugin {
         exportResource(getDataFolder(), "signcommands.yml", "");
 
         // Configure the handlers and managers.
-        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "items" + File.separator + "customitems.yml"), new File(getDataFolder() + File.separator + "items"));
+        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "internal" + File.separator + "complexitems.yml"), new File(getDataFolder() + File.separator + "internal"));
         this.signCommandsHandler = new SignCommandsHandler(getDataFolder(), this);
         this.npcHandler = new NpcHandler(getDataFolder(), plugin);
         this.lootTablesHandler = new LootTablesHandler();
