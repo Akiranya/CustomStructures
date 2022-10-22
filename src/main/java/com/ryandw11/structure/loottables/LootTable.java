@@ -83,9 +83,9 @@ public class LootTable {
     }
 
     /**
-     * Get a random item from the table.
+     * Get a random loot item from this loot table.
      *
-     * @return a random item
+     * @return a random item from this loot table
      * @see #getRandomWeightedItem(org.bukkit.entity.Player)
      */
     public @NotNull ItemStack getRandomWeightedItem() {
@@ -93,12 +93,14 @@ public class LootTable {
     }
 
     /**
-     * Get a random item from the loot table.
+     * Get a random loot item from this loot table.
      * <p>
      * This method is preferred over {@link #getRandomWeightedItem()} because it <b>can</b> generate an item stack with
-     * the consideration of the player's data.
+     * the consideration of the player's data. Whenever the player is null, the returned item stack is the same as that
+     * returned by {@link #getRandomWeightedItem()}.
      *
-     * @return a random item
+     * @param player the player which the item generation is based on
+     * @return a random item from this loot table
      * @see #getRandomWeightedItem()
      * @see com.ryandw11.structure.loottables.LootItem#getItemStack(org.bukkit.entity.Player)
      */
