@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 
 public final class PluginItemRegistry {
 
-    private static final Map<String, Supplier<PluginItem>> constructors = new HashMap<>();
+    private static final Map<String, Supplier<PluginItem<?>>> constructors = new HashMap<>();
 
-    public static void registerForConfig(String pluginId, Supplier<PluginItem> constructor) {
+    public static void registerForConfig(String pluginId, Supplier<PluginItem<?>> constructor) {
         constructors.put(pluginId.toLowerCase(), constructor);
     }
 
@@ -19,11 +19,11 @@ public final class PluginItemRegistry {
         constructors.remove(pluginId.toLowerCase());
     }
 
-    public static @NotNull PluginItem fromConfig(String plugin, String itemId) {
+    public static @NotNull PluginItem<?> fromConfig(String plugin, String itemId) {
         plugin = plugin.toLowerCase();
         itemId = itemId.toLowerCase();
         if (constructors.containsKey(plugin)) {
-            PluginItem item = constructors.get(plugin).get();
+            PluginItem<?> item = constructors.get(plugin).get();
             item.setPlugin(plugin);
             item.setItemId(itemId);
             item.onConstruct();

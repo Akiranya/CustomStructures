@@ -16,14 +16,14 @@ import org.jetbrains.annotations.NotNull;
  *      PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
  * */
 
-public class ItemsAdderPluginItem extends PluginItem {
+public class ItemsAdderPluginItem extends PluginItem<CustomStack> {
 
     public ItemsAdderPluginItem() {
     }
 
     @Override
     public @NotNull ItemStack getItemStack() {
-        ItemStack itemStack = getCustomStack().getItemStack();
+        ItemStack itemStack = getPluginItem().getItemStack();
         itemStack.setAmount(getAmount());
         return itemStack;
     }
@@ -35,7 +35,7 @@ public class ItemsAdderPluginItem extends PluginItem {
 
     @Override
     public @NotNull Material getMaterial() {
-        return getCustomStack().getItemStack().getType();
+        return getPluginItem().getItemStack().getType();
     }
 
     @Override
@@ -48,7 +48,8 @@ public class ItemsAdderPluginItem extends PluginItem {
         }
     }
 
-    private @NotNull CustomStack getCustomStack() {
+    @Override
+    public CustomStack getPluginItem() {
         if (getPlugin() == null || getItemId() == null)
             throw new LootTableException("ItemsAdder integration is not properly registered");
         CustomStack customStack = CustomStack.getInstance(getItemId());

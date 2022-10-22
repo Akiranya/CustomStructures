@@ -22,7 +22,7 @@ import java.util.Objects;
  *      PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
  * */
 
-public class MMOItemsPluginItem extends PluginItem {
+public class MMOItemsPluginItem extends PluginItem<MMOItemTemplate> {
 
     public MMOItemsPluginItem() {
     }
@@ -30,7 +30,7 @@ public class MMOItemsPluginItem extends PluginItem {
     @Override
     public @NotNull ItemStack getItemStack() {
         // This may generate a different version on each call if this item enabled RNG stats
-        ItemStack itemStack = getMMOItemTemplate().newBuilder().build().newBuilder().build();
+        ItemStack itemStack = getPluginItem().newBuilder().build().newBuilder().build();
         Objects.requireNonNull(itemStack).setAmount(getAmount());
         return itemStack;
     }
@@ -38,7 +38,7 @@ public class MMOItemsPluginItem extends PluginItem {
     @Override
     public @NotNull ItemStack getItemStack(Player player) {
         // This may generate a different version on each call depending on the given player
-        ItemStack itemStack = getMMOItemTemplate().newBuilder(player).build().newBuilder().build();
+        ItemStack itemStack = getPluginItem().newBuilder(player).build().newBuilder().build();
         Objects.requireNonNull(itemStack).setAmount(getAmount());
         return itemStack;
     }
@@ -61,7 +61,8 @@ public class MMOItemsPluginItem extends PluginItem {
         }
     }
 
-    private @NotNull MMOItemTemplate getMMOItemTemplate() {
+    @Override
+    public MMOItemTemplate getPluginItem() {
         if (getPlugin() == null || getItemId() == null)
             throw new LootTableException("MMOItems integration is not properly registered");
         String[] itemId = getItemId().trim().toUpperCase(Locale.ROOT).split(":");
@@ -76,4 +77,5 @@ public class MMOItemsPluginItem extends PluginItem {
             throw new LootTableException("[MMOItems] Could not found item: %s (type: %s)".formatted(itemId[1], itemId[0]));
         }
     }
+
 }

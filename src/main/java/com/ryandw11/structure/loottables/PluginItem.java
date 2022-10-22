@@ -5,8 +5,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a loot item from an external plugin.
+ *
+ * @param <T> the type of plugin item in the external plugin codebase
  */
-public abstract class PluginItem extends LootItem {
+public abstract class PluginItem<T> extends LootItem {
 
     @Nullable private String plugin;
     @Nullable private String itemId;
@@ -56,6 +58,15 @@ public abstract class PluginItem extends LootItem {
         this.itemId = itemId;
     }
 
+    /**
+     * Gets an instance of the plugin item from the external plugin codebase. The implementation is expected to use
+     * {@link #getPlugin()} and {@link #getItemId()} to get the specific plugin item instance from the database of the
+     * external plugin.
+     *
+     * @return the plugin item instance
+     */
+    abstract public T getPluginItem();
+
     public static class PluginLootItemBuilder {
         private int weight;
         private String amount;
@@ -79,8 +90,8 @@ public abstract class PluginItem extends LootItem {
             return this;
         }
 
-        public PluginItem build() {
-            PluginItem pluginItem = PluginItemRegistry.fromConfig(plugin, itemId);
+        public PluginItem<?> build() {
+            PluginItem<?> pluginItem = PluginItemRegistry.fromConfig(plugin, itemId);
             pluginItem.setWeight(weight);
             pluginItem.setAmount(amount);
             return pluginItem;
