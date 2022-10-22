@@ -68,9 +68,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
             try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
                 Clipboard clipboard = reader.read();
 
-                // Note: The minimum point of a Region is the lowest abs point in the original world
-
-                // The new origin point which the structure will be pasted onto
+                // The new origin point which the structure is pasted onto
                 int oX = spawnLocation.getBlockX();
                 int oY = spawnLocation.getBlockY();
                 int oZ = spawnLocation.getBlockZ();
@@ -87,7 +85,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
                             BlockVector3 groundPoint = BlockVector3.at(x, clipboardMinY, z);
 
                             groundPoint = groundPoint.subtract(clipboard.getOrigin()); // Translate point back to origin (0,0)
-                            Vector3 transformed = transform.apply(groundPoint.toVector3());// Apply transformation (rotation, etc.)
+                            Vector3 transformed = transform.apply(groundPoint.toVector3()); // Apply transformation (rotation, etc.)
                             groundPoint = transformed.add(oX, oY, oZ).toBlockPoint(); // Translate point back (to new origin)
 
                             groundPlane.add(groundPoint.toBlockVector2());
@@ -146,4 +144,5 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
             }
         }
     }
+
 }
