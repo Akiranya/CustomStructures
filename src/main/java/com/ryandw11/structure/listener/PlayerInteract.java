@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -48,10 +49,19 @@ public class PlayerInteract implements Listener {
 
         BlockState state = clickedBlock.getState();
         if (state instanceof Container container) {
-            @Nullable LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
-            if (lootChestTag == null) { // This container is not from a custom structure
-                return;
+            @Nullable LootChestTag lootChestTag; // null means this container is not from a custom structure
+            if (container.getInventory() instanceof DoubleChestInventory doubleChest) {
+                // We need to check both sides of DoubleChest as the tags ONLY stored in one of the two sides
+                container = (Container) Objects.requireNonNull(doubleChest.getLeftSide().getLocation(), "left block is null").getBlock().getState();
+                lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
+                if (lootChestTag == null) { // Left does not have tags, check right then
+                    container = (Container) Objects.requireNonNull(doubleChest.getRightSide().getLocation(), "right block is null").getBlock().getState();
+                    lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
+                }
+            } else {
+                lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
             }
+            if (lootChestTag == null) return;
 
             // ---- Get raw information in the tags ----
 
@@ -59,7 +69,6 @@ public class PlayerInteract implements Listener {
             Optional<String> explicitLootTableName = lootChestTag.getExplicitLootTableName();
 
             // ---- Construct and fire the event ----
-            // (to let other code handle the loot generation)
 
             // Note that we need to make sure the stored name of structure and loot table are valid
             // before we fire the event. This should make the life of listeners of this event easier!
