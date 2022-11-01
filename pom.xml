@@ -228,5 +228,11 @@
             <version>1.3.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.leonardo_dgs</groupId>
+            <artifactId>InteractiveBooks</artifactId>
+            <version>1.6.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

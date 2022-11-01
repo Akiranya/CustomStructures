@@ -14,6 +14,7 @@ import com.ryandw11.structure.listener.PlayerJoin;
 import com.ryandw11.structure.loottables.LootTablesHandler;
 import com.ryandw11.structure.loottables.ComplexItemManager;
 import com.ryandw11.structure.loottables.PluginItemRegistry;
+import com.ryandw11.structure.loottables.pluginitems.InteractiveBooksPluginItem;
 import com.ryandw11.structure.loottables.pluginitems.ItemsAdderPluginItem;
 import com.ryandw11.structure.loottables.pluginitems.MMOItemsPluginItem;
 import com.ryandw11.structure.mythicalmobs.MMDisabled;
@@ -336,6 +337,7 @@ public class CustomStructures extends JavaPlugin {
     private void registerPluginItems() {
         PluginItemRegistry.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
         PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
+        PluginItemRegistry.registerForConfig("ibooks", InteractiveBooksPluginItem::new);
     }
 
     /**
