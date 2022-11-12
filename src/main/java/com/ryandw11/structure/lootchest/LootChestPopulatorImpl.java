@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 class LootChestPopulatorImpl implements LootChestPopulator {
 
@@ -96,47 +96,43 @@ class LootChestPopulatorImpl implements LootChestPopulator {
             } else if (container.getInventory() instanceof BrewerInventory brewerInventory) {
                 replaceBrewerContent(player, lootTable, brewerInventory);
             } else {
-                replaceChestContent(player, lootTable, new Random(), container.getInventory());
+                replaceChestContent(player, lootTable, container.getInventory());
             }
         }
     }
 
     /**
-     * Replace the chest content.
+     * Replace the chest content and make the loot items sparsely put in the chest.
      *
      * @param lootTable          The loot table.
-     * @param random             The value of random.
      * @param containerInventory The container inventory
      */
-    private void replaceChestContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull Random random, @NotNull Inventory containerInventory) {
-        ItemStack[] containerContent = containerInventory.getContents();
-        ItemStack randomItem = lootTable.getRandomWeightedItem(player);
-        for (int j = 0; j < randomItem.getAmount(); j++) {
+    private void replaceChestContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull Inventory containerInventory) {
+        ItemStack lootItem = lootTable.getRandomWeightedItem(player);
+        for (int j = 0; j < lootItem.getAmount(); j++) {
             boolean done = false;
             int attempts = 0;
+
+            // This while loop tries to add a loot item with amount being 1 ----
+
             while (!done) {
-                int randomPos = random.nextInt(containerContent.length);
+                int randomPos = ThreadLocalRandom.current().nextInt(containerInventory.getSize());
                 ItemStack randomPosItem = containerInventory.getItem(randomPos);
-                if (randomPosItem != null) {
-                    if (this.isSameItem(randomPosItem, randomItem)) {
-                        if (randomPosItem.getAmount() < randomItem.getMaxStackSize()) {
-                            ItemStack randomItemCopy = randomItem.clone();
-                            int newAmount = randomPosItem.getAmount() + 1;
-                            randomItemCopy.setAmount(newAmount);
-                            containerContent[randomPos] = randomItemCopy;
-                            containerInventory.setContents(containerContent);
-                            done = true;
-                        }
+                if (randomPosItem != null) { // The random pos item is the same as loot item we are adding
+                    if (isSameItem(randomPosItem, lootItem) && randomPosItem.getAmount() < lootItem.getMaxStackSize()) {
+                        ItemStack lootItemCopy = lootItem.clone();
+                        lootItemCopy.setAmount(randomPosItem.getAmount() + 1);
+                        containerInventory.setItem(randomPos, lootItemCopy);
+                        done = true;
                     }
-                } else {
-                    ItemStack randomItemCopy = randomItem.clone();
-                    randomItemCopy.setAmount(1);
-                    containerContent[randomPos] = randomItemCopy;
-                    containerInventory.setContents(containerContent);
+                } else { // The random pos item is air
+                    ItemStack lootItemCopy = lootItem.clone();
+                    lootItemCopy.setAmount(1);
+                    containerInventory.setItem(randomPos, lootItemCopy);
                     done = true;
                 }
                 attempts++;
-                if (attempts >= containerContent.length) {
+                if (attempts >= containerInventory.getSize()) { // The container might be full, terminate it anyway
                     done = true;
                 }
             }
