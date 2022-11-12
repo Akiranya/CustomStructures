@@ -2,6 +2,8 @@ package com.ryandw11.structure.utils;
 
 import org.bukkit.Location;
 
+import java.util.Objects;
+
 /**
  * General utilities for Custom Structures.
  */
@@ -17,6 +19,7 @@ public class CSUtils {
      */
     public static String replacePlaceHolders(String command, Location signLocation, Location minLoc, Location maxLoc) {
         return command
+                .replace("<world>", "" + Objects.requireNonNull(signLocation.getWorld()).getName())
                 .replace("<x>", "" + signLocation.getBlockX())
                 .replace("<y>", "" + signLocation.getBlockY())
                 .replace("<z>", "" + signLocation.getBlockZ())
