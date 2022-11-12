@@ -13,12 +13,16 @@ public class InteractiveBooksPluginItem extends PluginItem<IBook> {
 
     @Override
     public @NotNull ItemStack getItemStack() {
-        return getPluginItem().getItem();
+        ItemStack item = getPluginItem().getItem();
+        item.setAmount(getAmount());
+        return item;
     }
 
     @Override
     public @NotNull ItemStack getItemStack(Player player) {
-        return getPluginItem().getItem(player);
+        ItemStack item = getPluginItem().getItem(player);
+        item.setAmount(getAmount());
+        return item;
     }
 
     @Override
