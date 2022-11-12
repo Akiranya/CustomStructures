@@ -50,7 +50,7 @@ Items:
     # (Optional. Default: None)
     Name: '&3Test3'
     # (Optional. Default: 1) The "Amount" option supports ranged numbers. See the wiki for details.
-    Amount: '[3:8]'
+    Amount: '[3;8]'
     # (Required)
     Weight: 20
 
