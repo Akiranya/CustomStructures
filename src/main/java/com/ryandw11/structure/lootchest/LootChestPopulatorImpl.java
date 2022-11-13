@@ -18,9 +18,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class LootChestPopulatorImpl implements LootChestPopulator {
 
@@ -108,32 +112,38 @@ class LootChestPopulatorImpl implements LootChestPopulator {
      * @param containerInventory The container inventory
      */
     private void replaceChestContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull Inventory containerInventory) {
+        // Generate a list of shuffled indices of inventory to
+        // avoid items being put too dense in the inventory
+        Deque<Integer> randomPosQueue = IntStream
+                .range(0, containerInventory.getSize())
+                .boxed()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(LinkedList::new),
+                        list -> {
+                            Collections.shuffle(list);
+                            return list;
+                        }));
+
         ItemStack lootItem = lootTable.getRandomWeightedItem(player);
+
         for (int j = 0; j < lootItem.getAmount(); j++) {
-            boolean done = false;
-            int attempts = 0;
 
-            // This while loop tries to add a loot item with amount being 1 ----
-
-            while (!done) {
-                int randomPos = ThreadLocalRandom.current().nextInt(containerInventory.getSize());
+            // This while loop tries to add a loot item with amount being 1
+            while (!randomPosQueue.isEmpty()) {
+                int randomPos = randomPosQueue.pollFirst();
                 ItemStack randomPosItem = containerInventory.getItem(randomPos);
                 if (randomPosItem != null) { // The random pos item is the same as loot item we are adding
                     if (isSameItem(randomPosItem, lootItem) && randomPosItem.getAmount() < lootItem.getMaxStackSize()) {
                         ItemStack lootItemCopy = lootItem.clone();
                         lootItemCopy.setAmount(randomPosItem.getAmount() + 1);
                         containerInventory.setItem(randomPos, lootItemCopy);
-                        done = true;
+                        break;
                     }
                 } else { // The random pos item is air
                     ItemStack lootItemCopy = lootItem.clone();
                     lootItemCopy.setAmount(1);
                     containerInventory.setItem(randomPos, lootItemCopy);
-                    done = true;
-                }
-                attempts++;
-                if (attempts >= containerInventory.getSize()) { // The container might be full, terminate it anyway
-                    done = true;
+                    break;
                 }
             }
         }
