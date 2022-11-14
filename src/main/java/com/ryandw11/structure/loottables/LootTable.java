@@ -118,7 +118,7 @@ public class LootTable {
      */
     public @NotNull List<ItemStack> drawAll() {
         List<ItemStack> items = new ArrayList<>();
-        for (int i = 0; i < rolls; i++) {
+        for (int i = 0; i < getRolls(); i++) {
             items.addAll(randomCollection.next().getItemStack());
         }
         return items;
@@ -136,7 +136,7 @@ public class LootTable {
         }
 
         List<ItemStack> items = new ArrayList<>();
-        for (int i = 0; i < rolls; i++) {
+        for (int i = 0; i < getRolls(); i++) {
             items.addAll(randomCollection.next().getItemStack(player));
         }
         return items;
