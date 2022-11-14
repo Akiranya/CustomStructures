@@ -30,8 +30,8 @@ public final class LootContentPlacer {
                 int attemptCount = 0;
 
                 // This while-loop attempts to add a loot item x1 in a random slot:
-                //      If selected slot is AIR, then set the AIR to the loot item
-                //      If selected slot already has the loot item, then increase the amount of the item
+                //      If selected slot is AIR, then set the AIR to be the loot item
+                //      If selected slot already has the loot item, then increase the amount by 1
                 while (attemptCount++ <= inventory.getSize()) {
                     int randomPos = ThreadLocalRandom.current().nextInt(inventory.getSize());
                     ItemStack randomPosItem = inventory.getItem(randomPos);
