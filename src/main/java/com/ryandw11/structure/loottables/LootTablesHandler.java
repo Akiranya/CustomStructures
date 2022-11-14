@@ -32,8 +32,7 @@ public class LootTablesHandler {
             try {
                 lootTables.put(lootTableName, new LootTable(lootTableName));
             } catch (LootTableException ex) {
-                CustomStructures.getInstance().getLogger().severe("There seems to be a problem with the '" +
-                                                                  lootTableName + "' loot table:");
+                CustomStructures.getInstance().getLogger().severe("There seems to be a problem with the \"" + lootTableName + "\" loot table:");
                 CustomStructures.getInstance().getLogger().severe(ex.getMessage());
             }
         }
