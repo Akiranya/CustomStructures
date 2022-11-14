@@ -192,8 +192,7 @@ public class LootTable {
                         .build();
                 randomCollection.add(lootItem.getWeight(), lootItem);
 
-            }
-            if (type.equalsIgnoreCase("COMPLEX")) {
+            } else if (type.equalsIgnoreCase("COMPLEX")) {
 
                 // ---- Type = "COMPLEX" ----
 
