@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class LootContentPlacer {
 
     /**
-     * Replace the chest content and make the loot items sparsely put in the chest.
+     * Put loot items sparsely in the chest.
      *
      * @param items     the loot items
      * @param inventory the inventory of the chest
