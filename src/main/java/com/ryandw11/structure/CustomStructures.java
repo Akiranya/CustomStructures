@@ -352,6 +352,7 @@ public class CustomStructures extends JavaPlugin {
             }
         } else {
             saveResource("lootTables/demo.yml", false);
+            saveResource("lootTables/demo-another.yml", false);
             saveResource("internal/complexitems.yml", false);
         }
     }

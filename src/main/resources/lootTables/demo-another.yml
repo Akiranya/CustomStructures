@@ -1,0 +1,13 @@
+#
+# LootTable Example
+#
+# You can create as many files as you want, each file represents a loot table.
+
+Rolls: 3
+
+Items:
+
+  simple-item-example:
+    Type: 'IRON_HELMET'
+    Amount: 1
+    Weight: 20

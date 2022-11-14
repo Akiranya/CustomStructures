@@ -69,6 +69,20 @@ Items:
     # (Required)
     Weight: 30
 
+  # This is an example of Nested Loot Table.
+  # You can define another loot table within this loot table!
+  # The depth of nested loot tables is basically unlimited, but be careful with loop!
+  # Don't worry, you can spot loops every time you reload the plugin from the console.
+  nested-table-example:
+    # (Required)
+    Type: 'TABLE'
+    # (Required) The name of another loot table. Case-sensitive.
+    Key: demo-another
+    # (Optional. Default: 1) Amount being greater than 1 means the loot table will be drawn multiple times.
+    Amount: 1
+    # (Required)
+    Weight: 30
+
   # This is ItemsAdder item example.
   # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
   items-adder-plugin-example:
