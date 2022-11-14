@@ -54,7 +54,7 @@ public final class LootContentPlacer {
     }
 
     /**
-     * Replace the contents of a brewer with the loot table.
+     * Replace the contents of a brewer with the loot table items.
      *
      * @param items     the loot items to populate the brewer with
      * @param inventory the inventory of the brewer
