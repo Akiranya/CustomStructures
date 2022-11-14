@@ -12,19 +12,14 @@ import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.FurnaceInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 class LootChestPopulatorImpl implements LootChestPopulator {
 
@@ -91,115 +86,18 @@ class LootChestPopulatorImpl implements LootChestPopulator {
         container.update(); // This is necessary for PDC to be actually updated
 
         // ---- Populate the loots ----
+
         // Note that changes to the inventory must be done AFTER container.update()
-        // Otherwise, the changes would be somewhat not applied (undone?)
+        // Otherwise the changes would be somewhat not applied (be undone...?)
 
-        for (int i = 0; i < lootTable.getRolls(); i++) {
-            if (container.getInventory() instanceof FurnaceInventory furnaceInventory) {
-                replaceFurnaceContent(player, lootTable, furnaceInventory); // This also applies to Smoker/BlastFurnace
-            } else if (container.getInventory() instanceof BrewerInventory brewerInventory) {
-                replaceBrewerContent(player, lootTable, brewerInventory);
-            } else {
-                replaceChestContent(player, lootTable, container.getInventory());
-            }
+        List<ItemStack> loots = lootTable.drawAll(player);
+        if (container.getInventory() instanceof FurnaceInventory furnaceInventory) {
+            LootContentPlacer.replaceFurnaceContent(loots, furnaceInventory); // This also applies to Smoker/BlastFurnace
+        } else if (container.getInventory() instanceof BrewerInventory brewerInventory) {
+            LootContentPlacer.replaceBrewerContent(loots, brewerInventory);
+        } else {
+            LootContentPlacer.replaceChestContent(loots, container.getInventory());
         }
-    }
-
-    /**
-     * Replace the chest content and make the loot items sparsely put in the chest.
-     *
-     * @param lootTable          The loot table.
-     * @param containerInventory The container inventory
-     */
-    private void replaceChestContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull Inventory containerInventory) {
-        // Generate a list of shuffled indices of inventory to
-        // avoid items being put too dense in the inventory
-        Deque<Integer> randomPosQueue = IntStream
-                .range(0, containerInventory.getSize())
-                .boxed()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toCollection(LinkedList::new),
-                        list -> {
-                            Collections.shuffle(list);
-                            return list;
-                        }));
-
-        ItemStack lootItem = lootTable.getRandomWeightedItem(player);
-
-        for (int j = 0; j < lootItem.getAmount(); j++) {
-
-            // This while loop tries to add a loot item with amount being 1
-            while (!randomPosQueue.isEmpty()) {
-                int randomPos = randomPosQueue.pollFirst();
-                ItemStack randomPosItem = containerInventory.getItem(randomPos);
-                if (randomPosItem != null) { // The random pos item is the same as loot item we are adding
-                    if (isSameItem(randomPosItem, lootItem) && randomPosItem.getAmount() < lootItem.getMaxStackSize()) {
-                        ItemStack lootItemCopy = lootItem.clone();
-                        lootItemCopy.setAmount(randomPosItem.getAmount() + 1);
-                        containerInventory.setItem(randomPos, lootItemCopy);
-                        break;
-                    }
-                } else { // The random pos item is air
-                    ItemStack lootItemCopy = lootItem.clone();
-                    lootItemCopy.setAmount(1);
-                    containerInventory.setItem(randomPos, lootItemCopy);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Replace the contents of a brewer with the loot table.
-     *
-     * @param lootTable          The loot table to populate the brewer with.
-     * @param containerInventory The inventory of the brewer.
-     */
-    private void replaceBrewerContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull BrewerInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem(player);
-        ItemStack ingredient = containerInventory.getIngredient();
-        ItemStack fuel = containerInventory.getFuel();
-
-        if (ingredient == null || ingredient.equals(item)) {
-            containerInventory.setIngredient(item);
-        } else if (fuel == null || fuel.equals(item)) {
-            containerInventory.setFuel(item);
-        }
-    }
-
-    /**
-     * Replace the content of the furnace (or smoker) with loot table items.
-     *
-     * @param lootTable          The loot table selected for the furnace.
-     * @param containerInventory The inventory of the furnace.
-     */
-    private void replaceFurnaceContent(@Nullable Player player, @NotNull LootTable lootTable, @NotNull FurnaceInventory containerInventory) {
-        ItemStack item = lootTable.getRandomWeightedItem(player);
-        ItemStack result = containerInventory.getResult();
-        ItemStack fuel = containerInventory.getFuel();
-        ItemStack smelting = containerInventory.getSmelting();
-
-        if (result == null || result.equals(item)) {
-            containerInventory.setResult(item);
-        } else if (fuel == null || fuel.equals(item)) {
-            containerInventory.setFuel(item);
-        } else if (smelting == null || smelting.equals(item)) {
-            containerInventory.setSmelting(item);
-        }
-    }
-
-
-    /**
-     * Check if two items are the same.
-     *
-     * @param first  The first item.
-     * @param second The second item.
-     * @return If the two items have the same metadata and type.
-     */
-    private boolean isSameItem(@NotNull ItemStack first, @NotNull ItemStack second) {
-        ItemMeta firstMeta = first.getItemMeta();
-        ItemMeta secondMeta = second.getItemMeta();
-        return first.getType().equals(second.getType()) && Objects.equals(firstMeta, secondMeta);
     }
 
 }

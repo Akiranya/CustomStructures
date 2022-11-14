@@ -1,13 +1,18 @@
 package com.ryandw11.structure.loottables;
 
 import com.ryandw11.structure.utils.NumberStylizer;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Represents a loot item within a loot table.
+ * <p>
+ * The loot item is abstracted in a way that, it can either be a {@link org.bukkit.inventory.ItemStack}, or an abstract
+ * form such as multiple item stacks from another {@link com.ryandw11.structure.loottables.LootTable} (i.e., a loot
+ * table can contain another loot table - the nested loot tables are support).
  */
 public abstract class LootItem {
 
@@ -50,21 +55,25 @@ public abstract class LootItem {
     }
 
     /**
-     * Get the item stack of this loot item.
+     * Get the list of item stacks of this loot item.
      * <p>
-     * The implementation may return a different version of the loot item on each call in the perspective of amount,
-     * lore, display name, enchantment level and attribute modifiers, particularly for the items that should vary
-     * between different players (such as items with random RPG stats).
+     * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
+     * List#get(0). However, the returned list may contain multiple items if the implementation is
+     * {@link TableItem#getItemStack()} which returns the drawn items from a loot table.
      *
      * @return a newly generated item stack of this loot item
      */
-    abstract public @NotNull ItemStack getItemStack();
+    abstract public @NotNull List<ItemStack> getItemStack();
 
     /**
-     * Get the item stack of this loot item with the consideration of the given player.
+     * Get the list of item stacks of this loot item with the consideration of given player.
      * <p>
-     * This method is preferred over {@link #getItemStack()} because it generates the item stack with the consideration
-     * of the player's data. It may be useful for certain implementation of the
+     * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
+     * List#get(0). However, the returned list may contain multiple items if the implementation is
+     * {@link TableItem#getItemStack()} which returns the drawn items from a loot table.
+     * <p>
+     * This method is preferred over {@link #getItemStack()} because it has the access to the player who triggers the
+     * loot generation. It may be useful for certain implementation of
      * {@link com.ryandw11.structure.loottables.LootItem}, which can generate unique items for different players.
      * Navigate the subclasses of {@link com.ryandw11.structure.loottables.LootItem} using your IDE for the details of
      * implementation.
@@ -73,24 +82,6 @@ public abstract class LootItem {
      * @return a newly generated item stack of this loot item
      * @see #getItemStack()
      */
-    abstract public @NotNull ItemStack getItemStack(Player player);
-
-    /**
-     * Get the base material of this loot item. The returned material only makes sense if this is an instance of
-     * CustomItem or SimpleItem. When it is PluginItem, the returned material is generally non-meaningful.
-     *
-     * @return the material of this loot item
-     */
-    abstract public @NotNull Material getMaterial();
-
-    /**
-     * Check whether the given item stack is the same as this loot item.
-     * <p>
-     * The exact behaviour is implementation-defined. Check the implementation for details.
-     *
-     * @param other the item stack to match with
-     * @return true if given item stack is the same as this loot item
-     */
-    abstract public boolean matches(ItemStack other);
+    abstract public @NotNull List<ItemStack> getItemStack(@NotNull Player player);
 
 }

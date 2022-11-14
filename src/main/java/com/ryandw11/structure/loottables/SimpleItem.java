@@ -6,10 +6,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represents a loot item without any item meta (no display name, lore, enchantments, etc).
  */
-public class SimpleItem extends LootItem {
+public class SimpleItem extends LootItem implements Matchable {
 
     @NotNull private final Material mat;
 
@@ -22,20 +25,15 @@ public class SimpleItem extends LootItem {
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public @NotNull List<ItemStack> getItemStack() {
         ItemStack itemStack = new ItemStack(mat);
         itemStack.setAmount(getAmount());
-        return itemStack;
+        return Collections.singletonList(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         return getItemStack();
-    }
-
-    @Override
-    public @NotNull Material getMaterial() {
-        return mat;
     }
 
     @Override

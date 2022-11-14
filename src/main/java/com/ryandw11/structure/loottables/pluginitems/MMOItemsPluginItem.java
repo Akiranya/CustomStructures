@@ -1,16 +1,18 @@
 package com.ryandw11.structure.loottables.pluginitems;
 
 import com.ryandw11.structure.exceptions.LootTableException;
+import com.ryandw11.structure.loottables.Matchable;
 import com.ryandw11.structure.loottables.PluginItem;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
 import net.Indyuce.mmoitems.api.item.template.MMOItemTemplate;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -22,30 +24,25 @@ import java.util.Objects;
  *      PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
  * */
 
-public class MMOItemsPluginItem extends PluginItem<MMOItemTemplate> {
+public class MMOItemsPluginItem extends PluginItem<MMOItemTemplate> implements Matchable {
 
     public MMOItemsPluginItem() {
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public @NotNull List<ItemStack> getItemStack() {
         // This may generate a different version on each call if this item enabled RNG stats
         ItemStack itemStack = getPluginItem().newBuilder().build().newBuilder().build();
         Objects.requireNonNull(itemStack).setAmount(getAmount());
-        return itemStack;
+        return Collections.singletonList(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         // This may generate a different version on each call depending on the given player
         ItemStack itemStack = getPluginItem().newBuilder(player).build().newBuilder().build();
         Objects.requireNonNull(itemStack).setAmount(getAmount());
-        return itemStack;
-    }
-
-    @Override
-    public @NotNull Material getMaterial() {
-        return getItemStack().getType();
+        return Collections.singletonList(itemStack);
     }
 
     @Override

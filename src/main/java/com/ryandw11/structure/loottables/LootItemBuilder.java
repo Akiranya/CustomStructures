@@ -55,4 +55,8 @@ public final class LootItemBuilder {
         return new ComplexItem.ComplexItemBuilder(itemStack);
     }
 
+    public static @NotNull TableItem.TableItemBuilder tableItem(@NotNull String tableKey) {
+        return new TableItem.TableItemBuilder(tableKey);
+    }
+
 }

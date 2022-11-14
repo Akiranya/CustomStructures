@@ -4,35 +4,27 @@ import com.ryandw11.structure.exceptions.LootTableException;
 import com.ryandw11.structure.loottables.PluginItem;
 import net.leonardo_dgs.interactivebooks.IBook;
 import net.leonardo_dgs.interactivebooks.InteractiveBooks;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.List;
+
 public class InteractiveBooksPluginItem extends PluginItem<IBook> {
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public @NotNull List<ItemStack> getItemStack() {
         ItemStack item = getPluginItem().getItem();
         item.setAmount(getAmount());
-        return item;
+        return Collections.singletonList(item);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack item = getPluginItem().getItem(player);
         item.setAmount(getAmount());
-        return item;
-    }
-
-    @Override
-    public @NotNull Material getMaterial() {
-        return Material.WRITABLE_BOOK;
-    }
-
-    @Override
-    public boolean matches(ItemStack other) {
-        return false;
+        return Collections.singletonList(item);
     }
 
     @Override
@@ -45,5 +37,5 @@ public class InteractiveBooksPluginItem extends PluginItem<IBook> {
         }
         return book;
     }
-    
+
 }

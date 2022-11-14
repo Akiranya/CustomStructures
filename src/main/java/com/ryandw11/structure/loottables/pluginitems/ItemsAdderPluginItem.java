@@ -1,12 +1,15 @@
 package com.ryandw11.structure.loottables.pluginitems;
 
 import com.ryandw11.structure.exceptions.LootTableException;
+import com.ryandw11.structure.loottables.Matchable;
 import com.ryandw11.structure.loottables.PluginItem;
 import dev.lone.itemsadder.api.CustomStack;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 /*
  * When implementing this, put CustomStructures as softdepend in your plugin.yml!
@@ -16,26 +19,21 @@ import org.jetbrains.annotations.NotNull;
  *      PluginItemRegistry.registerForConfig("mmoitems", MMOItemsPluginItem::new);
  * */
 
-public class ItemsAdderPluginItem extends PluginItem<CustomStack> {
+public class ItemsAdderPluginItem extends PluginItem<CustomStack> implements Matchable {
 
     public ItemsAdderPluginItem() {
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public @NotNull List<ItemStack> getItemStack() {
         ItemStack itemStack = getPluginItem().getItemStack();
         itemStack.setAmount(getAmount());
-        return itemStack;
+        return Collections.singletonList(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         return getItemStack();
-    }
-
-    @Override
-    public @NotNull Material getMaterial() {
-        return getPluginItem().getItemStack().getType();
     }
 
     @Override

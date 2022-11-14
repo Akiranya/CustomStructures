@@ -1,10 +1,12 @@
 package com.ryandw11.structure.loottables;
 
 import com.ryandw11.structure.utils.InventorySerialization;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Represents a loot item that contains complex NBT tags which cannot be expressed by
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * encouraged to implement a dedicated classes to deal with complex items, especially if the complex items are from
  * external plugins.
  */
-public class ComplexItem extends LootItem {
+public class ComplexItem extends LootItem implements Matchable {
 
     private final String itemAsBase64;
 
@@ -26,20 +28,15 @@ public class ComplexItem extends LootItem {
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public @NotNull List<ItemStack> getItemStack() {
         ItemStack itemStack = InventorySerialization.decodeItemStack(itemAsBase64);
         itemStack.setAmount(getAmount());
-        return itemStack;
+        return Collections.singletonList(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         return getItemStack();
-    }
-
-    @Override
-    public @NotNull Material getMaterial() {
-        return getItemStack().getType();
     }
 
     @Override

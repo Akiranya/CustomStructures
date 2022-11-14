@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Set;
  * Represents a loot item that has custom name, lore, enchantments and custom model data.
  */
 @SuppressWarnings("unused")
-public class CustomItem extends LootItem {
+public class CustomItem extends LootItem implements Matchable {
 
     @NotNull private final Material mat;
     @Nullable private final String name;
@@ -63,8 +64,8 @@ public class CustomItem extends LootItem {
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
-        ItemStack item = new ItemStack(getMaterial());
+    public @NotNull List<ItemStack> getItemStack() {
+        ItemStack item = new ItemStack(mat);
 
         // Set amount
         item.setAmount(getAmount());
@@ -92,22 +93,17 @@ public class CustomItem extends LootItem {
         meta.setCustomModelData(customModelData == -1 ? null : customModelData);
 
         item.setItemMeta(meta);
-        return item;
+        return Collections.singletonList(item);
     }
 
     @Override
-    public @NotNull ItemStack getItemStack(Player player) {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         return getItemStack();
     }
 
     @Override
-    public @NotNull Material getMaterial() {
-        return mat;
-    }
-
-    @Override
     public boolean matches(ItemStack other) {
-        if (getMaterial() != other.getType()) {
+        if (mat != other.getType()) {
             return false;
         }
         if (!other.hasItemMeta()) {

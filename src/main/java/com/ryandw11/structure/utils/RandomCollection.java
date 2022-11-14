@@ -9,13 +9,12 @@ import java.util.TreeMap;
  * A collection where the next value can be obtained at Random.
  *
  * <p>The way this works is that each item has a weight. Everytime an item is
- * added to the collection, the weight is added to the total weight value of the collection.
- * When the {@link #next()} method is called is calculates the probability of each item by
- * the weight/total_weight.</p>
+ * added to the collection, the weight is added to the total weight value of the collection. When the {@link #next()}
+ * method is called is calculates the probability of each item by the weight/total_weight.</p>
  *
  * <p>So if one item has a weight of 10 and another of 20, the total weight is 30. The first item has a
- * 33% chance of being selected while the second item has a 66% of spawning. If a third item is added with a weight
- * of 5, these would be the probability table:</p>
+ * 33% chance of being selected while the second item has a 66% of spawning. If a third item is added with a weight of
+ * 5, these would be the probability table:</p>
  * <table>
  *     <caption></caption>
  *     <tr>
@@ -64,12 +63,34 @@ public class RandomCollection<E> {
      * @param weight The weight of the item.
      * @param result The item to add.
      * @return The instance of this collection.
+     * @see #addAll(RandomCollection)
      */
     public RandomCollection<E> add(double weight, E result) {
         if (weight <= 0)
             return this;
         total += weight;
         map.put(total, result);
+        return this;
+    }
+
+    /**
+     * Add another collection to this collection.
+     *
+     * @param collection Another collection.
+     * @return The instance of this collection.
+     * @see #add(double, Object)
+     */
+    public RandomCollection<E> addAll(RandomCollection<E> collection) {
+        Map<Double, E> otherMap = collection.getMap();
+        for (Map.Entry<Double, E> entry : otherMap.entrySet()) {
+            double weight = entry.getKey();
+            E result = entry.getValue();
+            if (weight <= 0) {
+                continue;
+            }
+            total += weight;
+            map.put(total, result);
+        }
         return this;
     }
 
