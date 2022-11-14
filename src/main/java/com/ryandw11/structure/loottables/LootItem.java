@@ -59,7 +59,7 @@ public abstract class LootItem {
      * <p>
      * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
      * List#get(0). However, the returned list may contain multiple items if the implementation is
-     * {@link TableItem#getItemStack()} which returns the drawn items from a loot table.
+     * {@link TableItem#getItemStack()} which returns all the drawn items from a loot table.
      *
      * @return a newly generated item stack of this loot item
      */
@@ -70,7 +70,7 @@ public abstract class LootItem {
      * <p>
      * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
      * List#get(0). However, the returned list may contain multiple items if the implementation is
-     * {@link TableItem#getItemStack()} which returns the drawn items from a loot table.
+     * {@link TableItem#getItemStack()} which returns all the drawn items from a loot table.
      * <p>
      * This method is preferred over {@link #getItemStack()} because it has the access to the player who triggers the
      * loot generation. It may be useful for certain implementation of
