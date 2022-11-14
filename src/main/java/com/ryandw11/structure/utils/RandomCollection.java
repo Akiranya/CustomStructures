@@ -103,8 +103,8 @@ public class RandomCollection<E> {
      * @return The next value.
      */
     public E next() {
-        double value = random.nextDouble() * total;
-        return map.higherEntry(value).getValue();
+        double key = random.nextDouble() * total;
+        return map.higherEntry(key).getValue();
     }
 
     /**
