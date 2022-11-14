@@ -6,6 +6,9 @@
 # Determines how many loot items will be chosen from the item list bellow.
 Rolls: 3
 
+# Determines whether the loot items should be drawn with-replacement (true) or without-replacement (false).
+Replacement: false
+
 # Loot items
 Items:
 

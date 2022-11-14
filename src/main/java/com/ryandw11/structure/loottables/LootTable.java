@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +28,7 @@ public class LootTable {
 
     @NotNull private final String name;
     private final int rolls;
+    private final boolean replacement;
     @NotNull private final RandomCollection<LootItem> randomCollection;
     @NotNull private final FileConfiguration lootTableConfig;
 
@@ -58,8 +61,11 @@ public class LootTable {
 
         if (!lootTableConfig.contains("Rolls"))
             throw new LootTableException("Invalid loot table! Cannot find global \"Rolls\" setting at: " + name);
+        if (!lootTableConfig.contains("Replacement"))
+            throw new LootTableException("Invalid loot table! Cannot find global \"Replacement\" setting at: " + name);
 
         rolls = lootTableConfig.getInt("Rolls");
+        replacement = lootTableConfig.getBoolean("Replacement");
         randomCollection = new RandomCollection<>();
 
         loadLootItems();
@@ -81,6 +87,16 @@ public class LootTable {
      */
     public int getRolls() {
         return rolls;
+    }
+
+    /**
+     * Get whether the loot items should be drawn with-replacement / without-replacement.
+     *
+     * @return true if the loot items should be drawn with-replacement; false if the loot items should be drawn
+     * without-replacement.
+     */
+    public boolean isReplacement() {
+        return replacement;
     }
 
     /**
@@ -111,17 +127,30 @@ public class LootTable {
     }
 
     /**
+     * Select and return loot items depending on the value of {@link #isReplacement()}. If {@link #isReplacement()} is
+     * {@literal true}, then the selected loot items are drawn with-replacement; if {@link #isReplacement()} is
+     * {@literal false}, then the selected loot items are drawn without-replacement.
+     *
+     * @return the selected loot items depending on the value of {@link #replacement}
+     */
+    private Collection<LootItem> selectLoots() {
+        Collection<LootItem> loots = replacement ? new ArrayList<>() : new HashSet<>();
+        for (int i = 0; i < getRolls(); i++) {
+            if (!loots.add(randomCollection.next())) {
+                i--;
+            }
+        }
+        return loots;
+    }
+
+    /**
      * Draw {@literal N} loot items from this loot table, where {@literal N} is obtained by {@link #getRolls()}.
      *
      * @return {@literal N} random loot items from this loot table
      * @see #drawAll(org.bukkit.entity.Player)
      */
     public @NotNull List<ItemStack> drawAll() {
-        List<ItemStack> items = new ArrayList<>();
-        for (int i = 0; i < getRolls(); i++) {
-            items.addAll(randomCollection.next().getItemStack());
-        }
-        return items;
+        return selectLoots().stream().flatMap(loot -> loot.getItemStack().stream()).toList();
     }
 
     /**
@@ -134,12 +163,7 @@ public class LootTable {
         if (player == null) { // Fallback
             return drawAll();
         }
-
-        List<ItemStack> items = new ArrayList<>();
-        for (int i = 0; i < getRolls(); i++) {
-            items.addAll(randomCollection.next().getItemStack(player));
-        }
-        return items;
+        return selectLoots().stream().flatMap(loot -> loot.getItemStack(player).stream()).toList();
     }
 
     /**
