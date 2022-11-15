@@ -55,7 +55,7 @@ public class StructureHandler {
         for (String s : stringStructs) {
             File struct = new File(cs.getDataFolder() + File.separator + "structures" + File.separator + s.replace(".yml", "") + ".yml");
             if (!struct.exists()) {
-                cs.getLogger().warning("Structure file: " + s + ".yml does not exist! Did you make a new structure file in the Structure folder?");
+                cs.getLogger().warning("Structure file: " + s + ".yml does not exist! Did you make a new structure file in the \"structures\" folder?");
                 cs.getLogger().warning("For more information please check to wiki.");
                 continue;
             }
