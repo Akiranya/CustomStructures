@@ -134,7 +134,7 @@ public class LootTable {
      * @return the selected loot items depending on the value of {@link #replacement}
      */
     private Collection<LootItem> selectLoots() {
-        Collection<LootItem> loots = replacement ? new ArrayList<>() : new HashSet<>();
+        Collection<LootItem> loots = isReplacement() ? new ArrayList<>() : new HashSet<>();
         for (int i = 0; i < getRolls(); i++) {
             if (!loots.add(randomCollection.next())) {
                 i--;
