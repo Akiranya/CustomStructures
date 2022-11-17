@@ -55,6 +55,12 @@ public final class LootItemBuilder {
         return new ComplexItem.ComplexItemBuilder(itemStack);
     }
 
+    /**
+     * Gets a builder of {@link com.ryandw11.structure.loottables.TableItem}.
+     *
+     * @param tableKey the name of a loot table
+     * @return a builder of {@link com.ryandw11.structure.loottables.TableItem}
+     */
     public static @NotNull TableItem.TableItemBuilder tableItem(@NotNull String tableKey) {
         return new TableItem.TableItemBuilder(tableKey);
     }
