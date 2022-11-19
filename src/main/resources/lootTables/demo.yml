@@ -86,7 +86,7 @@ Items:
     # (Required)
     Weight: 30
 
-  # This is ItemsAdder item example.
+  # This is ItemsAdder item example (https://itemsadder.devs.beer/)
   # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
   items-adder-plugin-example:
     # (Required) The "Type" option needs to be "PLUGIN".
@@ -98,13 +98,25 @@ Items:
     # (Required)
     Weight: 100
 
-  # This is MMOItems item example.
+  # This is MMOItems item example (https://www.spigotmc.org/resources/mmoitems-premium.39267/)
   # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
   mmoitems-plugin-example:
     # (Required) The "Type" option needs to be "PLUGIN".
     Type: 'PLUGIN'
     # (Required) The ItemID of this plugin item. Must be "mmoitems:{itemType}:{itemId}".
     ID: mmoitems:sword:cutlass
+    # (Optional. Default: 1)
+    Amount: 1
+    # (Required)
+    Weight: 100
+
+  # This is InteractiveBooks item example (https://www.spigotmc.org/resources/interactivebooks.45604/)
+  # Only the options "Key", "Amount" and "Weight" are available if you use "Type: PLUGIN".
+  ibooks-plugin-example:
+    # (Required) The "Type" option needs to be "PLUGIN".
+    Type: 'PLUGIN'
+    # (Required) The ItemID of this plugin item. Must be "ibooks:{bookId}".
+    ID: ibooks:example_book
     # (Optional. Default: 1)
     Amount: 1
     # (Required)
