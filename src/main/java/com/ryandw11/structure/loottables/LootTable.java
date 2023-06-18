@@ -14,12 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a LootTable.
@@ -120,7 +115,7 @@ public class LootTable {
      * @return a random loot item from this loot table
      */
     public @NotNull List<ItemStack> drawOne(@Nullable Player player) {
-        if (player == null) { // Fallback
+        if (player == null) { // fallback
             return drawOne();
         }
         return randomCollection.next().getItemStack(player);
@@ -135,7 +130,12 @@ public class LootTable {
      */
     private Collection<LootItem> selectLoots() {
         Collection<LootItem> loots = isReplacement() ? new ArrayList<>() : new HashSet<>();
-        for (int i = 0; i < getRolls(); i++) {
+
+        int groundRolls = isReplacement()
+            ? getRolls()
+            : Math.min(getRolls(), getLootItems().size()); // Prevent infinite loops
+
+        for (int i = 0; i < groundRolls; i++) {
             if (!loots.add(randomCollection.next())) {
                 i--;
             }
@@ -211,9 +211,9 @@ public class LootTable {
 
                 String tableKey = Objects.requireNonNull(itemSection.getString("Key"), "The required option \"Key\" not found at: " + name + "/" + itemId);
                 TableItem lootItem = LootItemBuilder.tableItem(tableKey)
-                        .amount(amount)
-                        .weight(weight)
-                        .build();
+                    .amount(amount)
+                    .weight(weight)
+                    .build();
                 randomCollection.add(lootItem.getWeight(), lootItem);
 
             } else if (type.equalsIgnoreCase("COMPLEX")) {
@@ -224,9 +224,9 @@ public class LootTable {
                 String itemAsBase64 = CustomStructures.getInstance().getComplexItemManager().getItemAsBase64(key);
                 Objects.requireNonNull(itemAsBase64, "Cannot find a complex item with the key of " + key + " at: " + name + "/" + itemId);
                 LootItem lootItem = LootItemBuilder.complexItem(itemAsBase64)
-                        .amount(amount)
-                        .weight(weight)
-                        .build();
+                    .amount(amount)
+                    .weight(weight)
+                    .build();
                 randomCollection.add(lootItem.getWeight(), lootItem);
 
             } else if (type.equalsIgnoreCase("PLUGIN")) {
@@ -239,9 +239,9 @@ public class LootTable {
                     throw new LootTableException("The option \"ID\" must be in the form of \"{pluginId}:{reference}\". Error at: " + name + "/" + itemId);
                 }
                 LootItem lootItem = LootItemBuilder.pluginItem(pluginItemId[0], pluginItemId[1])
-                        .amount(amount)
-                        .weight(weight)
-                        .build();
+                    .amount(amount)
+                    .weight(weight)
+                    .build();
                 randomCollection.add(lootItem.getWeight(), lootItem);
 
             } else {
@@ -254,11 +254,11 @@ public class LootTable {
                     itemSection.contains("CustomModelData")) { // If it's a CustomItem
 
                     CustomItem.CustomLootItemBuilder builder = LootItemBuilder.customItem(type)
-                            .amount(amount)
-                            .weight(weight)
-                            .name(itemSection.getString("Name"))
-                            .lore(itemSection.getStringList("Lore"))
-                            .customModelData(itemSection.getInt("CustomModelData", -1));
+                        .amount(amount)
+                        .weight(weight)
+                        .name(itemSection.getString("Name"))
+                        .lore(itemSection.getStringList("Lore"))
+                        .customModelData(itemSection.getInt("CustomModelData", -1));
                     ConfigurationSection enchantSection = itemSection.getConfigurationSection("Enchantments");
                     if (enchantSection != null) {
                         Set<String> keys = enchantSection.getKeys(false);
@@ -276,9 +276,9 @@ public class LootTable {
                 } else { // If it's a SimpleItem
 
                     LootItem lootItem = LootItemBuilder.simpleItem(type)
-                            .amount(amount)
-                            .weight(weight)
-                            .build();
+                        .amount(amount)
+                        .weight(weight)
+                        .build();
                     randomCollection.add(lootItem.getWeight(), lootItem);
 
                 }
