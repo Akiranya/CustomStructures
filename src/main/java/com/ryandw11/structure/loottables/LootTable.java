@@ -133,7 +133,7 @@ public class LootTable {
 
         int groundRolls = isReplacement()
             ? getRolls()
-            : Math.min(getRolls(), getLootItems().size()); // Prevent infinite loops
+            : Math.min(getRolls(), randomCollection.size()); // Prevent infinite loops
 
         for (int i = 0; i < groundRolls; i++) {
             if (!loots.add(randomCollection.next())) {

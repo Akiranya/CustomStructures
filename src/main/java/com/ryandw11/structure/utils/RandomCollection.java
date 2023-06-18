@@ -28,7 +28,7 @@ import java.util.*;
  *     </tr>
  * </table>
  *
- * @param <E> The type of collection.
+ * @param <E> The element type of this collection.
  */
 public class RandomCollection<E> {
     private final NavigableMap<Double, E> map = new TreeMap<>();
@@ -129,5 +129,12 @@ public class RandomCollection<E> {
      */
     public List<E> toList() {
         return new ArrayList<>(map.values());
+    }
+
+    /**
+     * @return The size of this collection.
+     */
+    public int size() {
+        return map.size();
     }
 }
