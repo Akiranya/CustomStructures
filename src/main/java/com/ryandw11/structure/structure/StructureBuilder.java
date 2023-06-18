@@ -23,17 +23,17 @@ import java.util.*;
  * <p>This class is also used internally to load structures from structure config files.
  * <p>You can create a structure completely via code or load a structure from a yaml file.
  * <p>Example using a yaml file:
- * <pre>
- * {@code StructureBuilder builder = new StructureBuilder("MyName", file);}
- * {@code Structure struct = builder.build()}
- * </pre>
+ * <pre>{@code
+ *      StructureBuilder builder = new StructureBuilder("MyName", file);
+ *      Structure struct = builder.build();
+ * }</pre>
  * <p>Example using code:
- * <pre>
- * {@code StructureBuilder builder = new StructureBuilder("MyName", file);}
- * {@code builder.setStructureLimitations(new StructureLimitations());}
- * {@code ...}
- * {@code Structure struct = builder.build();}
- * </pre>
+ * <pre>{@code
+ *      StructureBuilder builder = new StructureBuilder("MyName", file);
+ *      builder.setStructureLimitations(new StructureLimitations());
+ *      ...
+ *      Structure struct = builder.build();
+ * }</pre>
  */
 public class StructureBuilder {
 
