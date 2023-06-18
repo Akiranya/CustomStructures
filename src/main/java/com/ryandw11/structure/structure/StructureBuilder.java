@@ -42,14 +42,16 @@ public class StructureBuilder {
 
     protected String name;
     protected String schematic;
-    protected int chanceNumber;
-    protected int chanceOutOf;
+    protected int probabilityNumerator;
+    protected int probabilityDenominator;
+    protected int priority;
     protected String compiledSchematic;
     protected boolean isCompiled = false;
     protected StructureLocation structureLocation;
     protected StructureProperties structureProperties;
     protected StructureLimitations structureLimitations;
-    protected MaskProperty maskProperty;
+    protected MaskProperty sourceMaskProperty;
+    protected MaskProperty targetMaskProperty;
     protected SubSchematics subSchematics;
     protected AdvancedSubSchematics advancedSubSchematics;
     protected BottomSpaceFill bottomSpaceFill;
@@ -79,6 +81,7 @@ public class StructureBuilder {
         this.plugin = CustomStructures.getInstance();
         this.name = name;
         this.schematic = schematic;
+        this.priority = 100;
         this.baseRotation = 0;
         lootTables = new HashMap<>();
         this.structureSections = sections;
@@ -95,6 +98,7 @@ public class StructureBuilder {
         this.plugin = CustomStructures.getInstance();
         this.name = name;
         this.schematic = schematic;
+        this.priority = 100;
         this.baseRotation = 0;
         lootTables = new HashMap<>();
         this.structureSections = Arrays.asList(sections);
@@ -121,24 +125,26 @@ public class StructureBuilder {
 
         checkValidity();
 
-        schematic = config.getString("schematic");
-        chanceNumber = config.getInt("Chance.Number");
-        chanceOutOf = config.getInt("Chance.OutOf");
+        schematic = config.getString("Schematic");
+        probabilityNumerator = config.getInt("Probability.Numerator");
+        probabilityDenominator = config.getInt("Probability.Denominator");
+        priority = config.contains("Priority") ? config.getInt("Priority") : 100;
         baseRotation = 0;
 
-        if (config.contains("compiled_schematic")) {
-            isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" +
-                                  Objects.requireNonNull(config.getString("compiled_schematic"))).exists();
-            if (!isCompiled)
+        if (config.contains("CompiledSchematic")) {
+            isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + Objects.requireNonNull(config.getString("CompiledSchematic"))).exists();
+            if (!isCompiled) {
                 CustomStructures.getInstance().getLogger().severe("Invalid compiled schematic file for: " + name);
-            else
-                compiledSchematic = config.getString("compiled_schematic");
+            } else {
+                compiledSchematic = config.getString("CompiledSchematic");
+            }
         }
 
         structureLocation = new StructureLocation(config);
         structureProperties = new StructureProperties(config);
         structureLimitations = new StructureLimitations(config);
-        maskProperty = new MaskProperty(config);
+        sourceMaskProperty = new MaskProperty("SourceMask", config);
+        targetMaskProperty = new MaskProperty("TargetMask", config);
         subSchematics = new SubSchematics(config, CustomStructures.getInstance());
         advancedSubSchematics = new AdvancedSubSchematics(config, CustomStructures.getInstance());
         bottomSpaceFill = new BottomSpaceFill(config);
@@ -149,7 +155,7 @@ public class StructureBuilder {
             setLootTables(Objects.requireNonNull(lootTableConfig)); // Should never throw NPE
         }
 
-        // Go through and setup the sections for the addons.
+        // Go through and set up the sections for the addons.
         for (CustomStructureAddon addon : CustomStructures.getInstance().getAddonHandler().getCustomStructureAddons()) {
             for (StructureSectionProvider provider : addon.getProviderSet()) {
                 try {
@@ -162,11 +168,10 @@ public class StructureBuilder {
                     this.structureSections.add(section);
                 } catch (StructureConfigurationException ex) {
                     // Handle the structureConfigurationException.
-                    throw new StructureConfigurationException(String.format("[%s Addon] %s. This is not" +
-                                                                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
+                    throw new StructureConfigurationException("[%s Addon] %s. This is not an issue with the CustomStructures plugin.".formatted(addon.getName(), ex.getMessage()));
                 } catch (Throwable ex) {
                     // Inform the user of errors.
-                    plugin.getLogger().severe(String.format("An error was encountered in the %s addon! Enable debug for more information.", addon.getName()));
+                    plugin.getLogger().severe("An error was encountered in the %s addon! Enable debug for more information.".formatted(addon.getName()));
                     plugin.getLogger().severe(ex.getMessage());
                     plugin.getLogger().severe("This is not an issue with CustomStructures! Please contact the addon developer.");
                     if (plugin.isDebug())
@@ -184,57 +189,68 @@ public class StructureBuilder {
                         constructedSection.setupSection(config.getConfigurationSection(constructedSection.getName()));
                     }
                     this.structureSections.add(constructedSection);
-                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                         InvocationTargetException ex) {
+                } catch (NoSuchMethodException |
+                         InstantiationException |
+                         IllegalAccessException |
+                         InvocationTargetException ex
+                ) {
                     // Inform the user of errors.
-                    plugin.getLogger().severe(String.format("The section %s for the addon %s" +
-                                                            "is configured incorrectly. If you are the developer please refer to the API documentation.",
-                            section.getName(), addon.getName()));
-                    plugin.getLogger().severe("This is not an issue with CustomStructures." +
-                                              "Report this error to the addon developer!!");
+                    plugin.getLogger().severe("The section %s for the addon %s is configured incorrectly. If you are the developer please refer to the API documentation.".formatted(section.getName(), addon.getName()));
+                    plugin.getLogger().severe("This is not an issue with CustomStructures. Report this error to the addon developer!!");
                 } catch (StructureConfigurationException ex) {
                     // Handle the structureConfigurationException.
-                    throw new StructureConfigurationException(String.format("[%s Addon] %s. This is not" +
-                                                                            "an issue with the CustomStructures plugin.", addon.getName(), ex.getMessage()));
+                    throw new StructureConfigurationException("[%s Addon] %s. This is not an issue with the CustomStructures plugin.".formatted(addon.getName(), ex.getMessage()));
                 } catch (Exception ex) {
                     // Inform the user of errors.
-                    plugin.getLogger().severe(String.format("An error was encountered in the %s addon! Enable debug for more information.", addon.getName()));
+                    plugin.getLogger().severe("An error was encountered in the %s addon! Enable debug for more information.".formatted(addon.getName()));
                     plugin.getLogger().severe(ex.getMessage());
                     plugin.getLogger().severe("This is not an issue with CustomStructures! Please contact the addon developer.");
-                    if (plugin.isDebug())
+                    if (plugin.isDebug()) {
                         ex.printStackTrace();
+                    }
                 }
             }
         }
     }
 
     private void checkValidity() {
-        if (!config.contains("schematic")) {
+        if (!config.contains("Schematic")) {
             throw new StructureConfigurationException("Invalid structure config: No Schematic found!");
         }
-        if (!config.contains("Chance.Number")) {
-            throw new StructureConfigurationException("Invalid structure config: `Chance.Number` is required!");
+        if (!config.contains("Probability.Numerator")) {
+            throw new StructureConfigurationException("Invalid structure config: `Probability.Numerator` is required!");
         }
-        if (!config.contains("Chance.OutOf")) {
-            throw new StructureConfigurationException("Invalid structure config: `Chance.OutOf` is required!");
+        if (!config.contains("Probability.Denominator")) {
+            throw new StructureConfigurationException("Invalid structure config: `Probability.Denominator` is required!");
         }
-        if (!config.isInt("Chance.Number") || config.getInt("Chance.Number") < 1) {
-            throw new StructureConfigurationException("Invalid structure config: `Chance.Number` must be a number cannot be less than 1!");
+        if (!config.isInt("Probability.Numerator") || config.getInt("Probability.Numerator") < 1) {
+            throw new StructureConfigurationException("Invalid structure config: `Probability.Numerator` must be a number cannot be less than 1!");
         }
-        if (!config.isInt("Chance.OutOf") || config.getInt("Chance.OutOf") < 1) {
-            throw new StructureConfigurationException("Invalid structure config: `Chance.OutOf` must be a number cannot be less than 1!");
+        if (!config.isInt("Probability.Denominator") || config.getInt("Probability.Denominator") < 1) {
+            throw new StructureConfigurationException("Invalid structure config: `Probability.Denominator` must be a number cannot be less than 1!");
         }
     }
 
     /**
-     * Set the chance of the structure.
+     * Set the probability of the structure spawning.
+     * <p>How many times (numerator) a structure should spawn per x (denominator) chunks.</p>
      *
-     * @param number The number chance.
-     * @param outOf  The out of chance.
+     * @param numerator   The numerator of the probability fraction.
+     * @param denominator The denominator of the probability fraction.
      */
-    public void setChance(int number, int outOf) {
-        this.chanceNumber = number;
-        this.chanceOutOf = outOf;
+    public void setProbability(int numerator, int denominator) {
+        this.probabilityNumerator = numerator;
+        this.probabilityDenominator = denominator;
+    }
+
+    /**
+     * Set the priority of the structure.
+     * <p>The lower the number, the greater the priority.</p>
+     *
+     * @param priority The priority of the structure. (Default 100).
+     */
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     /**
@@ -280,12 +296,21 @@ public class StructureBuilder {
     }
 
     /**
-     * Set the mask property.
+     * Set the source mask property.
      *
-     * @param mask The mask property.
+     * @param mask The source mask property.
      */
-    public void setMaskProperty(MaskProperty mask) {
-        this.maskProperty = mask;
+    public void setSourceMaskProperty(MaskProperty mask) {
+        this.sourceMaskProperty = mask;
+    }
+
+    /**
+     * Set the target mask property.
+     *
+     * @param mask The target mask property.
+     */
+    public void setTargetMaskProperty(MaskProperty mask) {
+        this.targetMaskProperty = mask;
     }
 
     /**
@@ -394,7 +419,8 @@ public class StructureBuilder {
         Objects.requireNonNull(structureLocation, "The structure location cannot be null.");
         Objects.requireNonNull(structureProperties, "The structure property cannot be null.");
         Objects.requireNonNull(structureLimitations, "The structure limitations cannot be null.");
-        Objects.requireNonNull(maskProperty, "The structure mask property cannot be null.");
+        Objects.requireNonNull(sourceMaskProperty, "The structure source mask property cannot be null.");
+        Objects.requireNonNull(targetMaskProperty, "The structure target mask property cannot be null.");
         Objects.requireNonNull(subSchematics, "The structure sub-schematic property cannot be null.");
         Objects.requireNonNull(advancedSubSchematics, "The structure advanced sub-schematic property cannot be null.");
         Objects.requireNonNull(bottomSpaceFill, "The structure bottom space fill property cannot be null.");
@@ -413,9 +439,9 @@ public class StructureBuilder {
     public void save(File file) throws IOException {
         file.createNewFile();
         config = YamlConfiguration.loadConfiguration(file);
-        config.set("schematic", schematic);
-        config.set("Chance.Number", chanceNumber);
-        config.set("Chance.OutOf", chanceOutOf);
+        config.set("Schematic", schematic);
+        config.set("Probability.Numerator", probabilityNumerator);
+        config.set("Probability.Denominator", probabilityDenominator);
 
         config.set("StructureLocation.Worlds", structureLocation.getWorlds());
         config.set("StructureLocation.SpawnY", structureLocation.getSpawnSettings().getValue());
@@ -423,15 +449,15 @@ public class StructureBuilder {
         config.set("StructureLocation.Biome", structureLocation.getBiomes());
 
         config.set("StructureProperties.PlaceAir", structureProperties.canPlaceAir());
-        config.set("StructureProperties.randomRotation", structureProperties.isRandomRotation());
-        config.set("StructureProperties.ignorePlants", structureProperties.isIgnoringPlants());
-        config.set("StructureProperties.spawnInWater", structureProperties.canSpawnInWater());
-        config.set("StructureProperties.spawnInLavaLakes", structureProperties.canSpawnInLavaLakes());
+        config.set("StructureProperties.RandomRotation", structureProperties.isRandomRotation());
+        config.set("StructureProperties.IgnorePlants", structureProperties.isIgnoringPlants());
+        config.set("StructureProperties.SpawnInWater", structureProperties.canSpawnInWater());
+        config.set("StructureProperties.SpawnInLavaLakes", structureProperties.canSpawnInLavaLakes());
 
-        config.set("StructureLimitations.whitelistSpawnBlocks", structureLimitations.getWhitelistBlocks());
+        config.set("StructureLimitations.WhitelistSpawnBlocks", structureLimitations.getWhitelistBlocks());
 
         if (isCompiled)
-            config.set("compiled_schematic", compiledSchematic);
+            config.set("CompiledSchematic", compiledSchematic);
 
         for (Map.Entry<LootTableType, RandomCollection<LootTable>> loot : lootTables.entrySet()) {
             for (Map.Entry<Double, LootTable> entry : loot.getValue().getMap().entrySet()) {

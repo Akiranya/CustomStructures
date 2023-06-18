@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> the type of plugin item in the external plugin codebase
  */
-public abstract class PluginItem<T> extends LootItem {
+public abstract class PluginItem<T> extends LootItem { // TODO depends on MewCore
 
     @Nullable private String plugin;
     @Nullable private String itemId;

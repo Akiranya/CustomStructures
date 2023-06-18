@@ -29,7 +29,7 @@ import java.util.Optional;
 public class PlayerInteract implements Listener {
 
     /**
-     * <p><b>FOR INTERNAL USE.</b>
+     * <p><b>Internal Use Only.</b>
      *
      * <p>It is used to fire an {@link com.ryandw11.structure.api.LootInventoryOpenEvent} when a player opens a loot
      * container of custom structure, so other code (internal or external code) can modify the loot container.
@@ -51,7 +51,7 @@ public class PlayerInteract implements Listener {
         if (state instanceof Container container) {
             @Nullable LootChestTag lootChestTag; // null means this container is not from a custom structure
             if (container.getInventory() instanceof DoubleChestInventory doubleChest) {
-                // We need to check both sides of DoubleChest as the tags ONLY stored in one of the two sides
+                // We need to check both sides of DoubleChest as the tags are only stored in one of the two sides
                 container = (Container) Objects.requireNonNull(doubleChest.getLeftSide().getLocation(), "left block is null").getBlock().getState();
                 lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
                 if (lootChestTag == null) { // Left does not have tags, check right then
@@ -61,7 +61,10 @@ public class PlayerInteract implements Listener {
             } else {
                 lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
             }
-            if (lootChestTag == null) return;
+
+            if (lootChestTag == null) {
+                return;
+            }
 
             // ---- Get raw information in the tags ----
 
@@ -73,18 +76,16 @@ public class PlayerInteract implements Listener {
             // Note that we need to make sure the stored name of structure and loot table are valid
             // before we fire the event. This should make the life of listeners of this event easier!
 
-            Structure structure = Objects.requireNonNull(CustomStructures.getInstance().getStructureHandler().getStructure(structureName),
-                    "The structure named \"" + structureName + "\" in the loot chest tags was not found in the plugin config.");
-            LootTable lootTable = explicitLootTableName
-                    .map(s -> Objects.requireNonNull(CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s),
-                            "The loot table named \"" + s + "\" in the loot chest tags was not found in the plugin config. "))
-                    .orElse(null);
+            Structure structure = Objects.requireNonNull(CustomStructures.getInstance().getStructureHandler().getStructure(structureName), "The structure named \"" + structureName + "\" in the loot chest tags was not found in the plugin config.");
+            LootTable lootTable = explicitLootTableName.map(s -> Objects.requireNonNull(CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s), "The loot table named \"" + s + "\" in the loot chest tags was not found in the plugin config. ")).orElse(null);
             LootInventoryOpenEvent lootInventoryOpenEvent = new LootInventoryOpenEvent(
-                    event.getPlayer(),
-                    structure,
-                    container,
-                    lootChestTag,
-                    lootTable);
+                event.getPlayer(),
+                structure,
+                container,
+                lootChestTag,
+                lootTable
+            );
+
             Bukkit.getServer().getPluginManager().callEvent(lootInventoryOpenEvent);
 
             if (lootInventoryOpenEvent.isCancelled()) {

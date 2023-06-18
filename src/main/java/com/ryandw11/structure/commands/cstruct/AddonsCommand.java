@@ -41,11 +41,12 @@ public class AddonsCommand implements SubCommand {
             // A simple hard-coded way to determine if an addon is official. This only serves as confirmation to the user that the
             // addon they are using is developed and supported officially.
             if (addon.getAuthors().size() == 1
-                    && addon.getAuthors().get(0).equalsIgnoreCase("Ryandw11")
-                    && officialAddons.contains(addon.getName()))
+                && addon.getAuthors().get(0).equalsIgnoreCase("Ryandw11")
+                && officialAddons.contains(addon.getName()))
                 official = "(Official)";
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&a- &6%s &aby: &6%s   &9%s", addon.getName(), String.join("&a,&6 ", addon.getAuthors()), official)));
+                "&a- &6%s &aby: &6%s   &9%s".formatted(addon.getName(), String.join("&a,&6 ", addon.getAuthors()), official))
+            );
         }
         return false;
     }

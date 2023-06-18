@@ -65,6 +65,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
                 CustomStructures.getInstance().getLogger().warning("Please create a valid schematic using the in-game commands");
                 return;
             }
+
             try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
                 Clipboard clipboard = reader.read();
 
@@ -104,9 +105,7 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
 
             // ---- Then do the block placement on the main thread ----
 
-            Bukkit.getScheduler().runTask(CustomStructures.getInstance(), () -> {
-                runTaskTimer(CustomStructures.getInstance(), 0, 1);
-            });
+            Bukkit.getScheduler().runTask(CustomStructures.getInstance(), () -> runTaskTimer(CustomStructures.getInstance(), 0, 1));
         });
     }
 
@@ -132,12 +131,12 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
             int z = groundPoint.getBlockZ();
             for (int j = 0; j < 64; j++) { // Fill the bottom space of the selected ground points down to 64 blocks
                 boolean shouldFill =
-                        // If the block is empty
-                        world.getBlockAt(x, y, z).isEmpty() ||
-                        // Or if the block is in the list of ignore blocks.
-                        CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType()) ||
-                        // Or if it is water (if it is set to be ignored)
-                        (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
+                    // If the block is empty
+                    world.getBlockAt(x, y, z).isEmpty() ||
+                    // Or if the block is in the list of ignore blocks.
+                    CustomStructures.getInstance().getBlockIgnoreManager().getBlocks().contains(world.getBlockAt(x, y, z).getType()) ||
+                    // Or if it is water (if it is set to be ignored)
+                    (structure.getStructureProperties().shouldIgnoreWater() && world.getBlockAt(x, y, z).getType() == Material.WATER);
                 if (shouldFill) {
                     world.getBlockAt(x, y--, z).setType(fillMaterial);
                 } else break;

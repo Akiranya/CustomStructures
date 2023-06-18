@@ -10,8 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.FurnaceInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +39,9 @@ class LootChestPopulatorImpl implements LootChestPopulator {
             }
         }
         container.getPersistentDataContainer().set(
-                LootChestConstant.LOOT_CHEST,
-                LootChestTagType.INSTANCE,
-                LootChestTag.of(structure.getName(), lootTableName)
+            LootChestConstant.LOOT_CHEST,
+            LootChestTagType.INSTANCE,
+            LootChestTag.of(structure.getName(), lootTableName)
         );
         container.update();
         container.getInventory().clear(firstItemIndex); // This must execute lastly, otherwise container.update() would somewhat undo it
@@ -51,13 +50,17 @@ class LootChestPopulatorImpl implements LootChestPopulator {
     @Override
     public void populateContents(@Nullable Player player, @NotNull Container container) {
         final LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
-        if (lootChestTag == null) return;
+        if (lootChestTag == null) {
+            return;
+        }
 
         // ---- Reconstruct information from the tags ----
 
         final Structure structure = CustomStructures.getInstance().getStructureHandler().getStructure(lootChestTag.getStructureName());
         final Optional<String> explicitLootTableName = lootChestTag.getExplicitLootTableName();
-        if (structure.getLootTables().isEmpty()) return; // Returns if this structure has no loot tables at all
+        if (structure.getLootTables().isEmpty()) {
+            return; // Returns if this structure has no loot tables at all
+        }
 
         // ---- Get correct loot table from the tags ----
 
@@ -69,7 +72,9 @@ class LootChestPopulatorImpl implements LootChestPopulator {
             // No explicit loot table set, so we need to choose one depending on the type of this container
             final LootTableType containerType = LootTableType.valueOf(container.getBlock().getType());
             final RandomCollection<LootTable> tables = structure.getLootTables(containerType);
-            if (tables == null) return; // Returns if this structure has no loot tables of this container type
+            if (tables == null) {
+                return; // Returns if this structure has no loot tables of this container type
+            }
             lootTable = tables.next();
         }
 
@@ -77,7 +82,9 @@ class LootChestPopulatorImpl implements LootChestPopulator {
 
         final LootPopulateEvent event = new LootPopulateEvent(player, structure, container, lootTable, lootChestTag);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            return;
+        }
 
         // ---- Update tags stored in the container ----
 
@@ -91,13 +98,8 @@ class LootChestPopulatorImpl implements LootChestPopulator {
         // Otherwise the changes would be somewhat not applied (be undone...?)
 
         List<ItemStack> loots = lootTable.drawAll(player);
-        if (container.getInventory() instanceof FurnaceInventory furnaceInventory) {
-            LootContentPlacer.replaceFurnaceContent(loots, furnaceInventory); // This also applies to Smoker/BlastFurnace
-        } else if (container.getInventory() instanceof BrewerInventory brewerInventory) {
-            LootContentPlacer.replaceBrewerContent(loots, brewerInventory);
-        } else {
-            LootContentPlacer.replaceChestContent(loots, container.getInventory());
-        }
+        Inventory inventory = container.getInventory();
+        LootContentPlacer.replaceContent(loots, inventory);
     }
 
 }

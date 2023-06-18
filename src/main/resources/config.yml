@@ -1,6 +1,6 @@
-configversion: 8
+configversion: 9
 
-#==========================================
+#========================================
 #             Custom Structures    
 #==========================================
 # Wiki: https://github.com/ryandw11/CustomStructures/wiki
@@ -26,5 +26,5 @@ lootables:
   restrictPlayerReloot: true
   unbreakable: true
 
-Structures:
+structures:
   - demo

@@ -2,8 +2,8 @@ package com.ryandw11.structure.api;
 
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.structaddon.CustomStructureAddon;
-import com.ryandw11.structure.loottables.LootTablesHandler;
 import com.ryandw11.structure.loottables.ComplexItemManager;
+import com.ryandw11.structure.loottables.LootTableHandler;
 import com.ryandw11.structure.structure.StructureHandler;
 
 /**
@@ -47,7 +47,7 @@ public class CustomStructuresAPI {
     public void registerCustomAddon(CustomStructureAddon customStructureAddon) {
         if (plugin.getAddonHandler() == null)
             throw new IllegalStateException("The addon system has not been initialized yet. Please add CustomStructures " +
-                    "as a dependency in your plugin.yml file.");
+                                            "as a dependency in your plugin.yml file.");
         plugin.getAddonHandler().registerAddon(customStructureAddon);
     }
 
@@ -76,7 +76,7 @@ public class CustomStructuresAPI {
      *
      * @return The loot table handler.
      */
-    public LootTablesHandler getLootTableHandler() {
+    public LootTableHandler getLootTableHandler() {
         return plugin.getLootTableHandler();
     }
 
@@ -103,9 +103,8 @@ public class CustomStructuresAPI {
      *
      * <p>This setting is set by the user in the config file.</p>
      *
-     * @deprecated Void spawning is now always enabled.
-     *
      * @return Get if structures can spawn in the void.
+     * @deprecated Void spawning is now always enabled.
      */
     @Deprecated
     public boolean isVoidSpawningEnabled() {

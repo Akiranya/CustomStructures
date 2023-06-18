@@ -2,6 +2,7 @@ package com.ryandw11.structure.listener;
 
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.utils.StructurePicker;
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,23 +22,23 @@ public class ChunkLoad implements Listener {
     }
 
     @EventHandler
-    public void onChunkLoad(ChunkLoadEvent e) {
-        if (!CustomStructures.enabled) return;
+    public void onChunkLoad(ChunkLoadEvent event) {
+        if (!CustomStructures.enabled) {
+            return;
+        }
 
         // Allow new chunk to be disabled.
-        boolean newChunk = plugin.getConfig().contains("new_chunks") && !plugin.getConfig().getBoolean("new_chunks");
-        if (!newChunk && !e.isNewChunk()) return;
+        boolean newChunks = plugin.getConfig().getBoolean("new_chunks");
+        if (newChunks && event.isNewChunk()) {
+            return;
+        }
 
+        Chunk chunk = event.getChunk();
+        Block block = chunk.getBlock(8, 5, 8); // Grabs the block 8, 5, 8 in that chunk.
 
-        Block b = e.getChunk().getBlock(8, 5, 8); //Grabs the block 8, 5, 8 in that chunk.
-
-        /*
-         * Schematic handler
-         * This activity is done async to prevent the server from lagging.
-         */
+        // Schematic handler. This activity is done async to prevent the server from lagging.
         try {
-            StructurePicker s = new StructurePicker(b, e.getChunk(), CustomStructures.getInstance());
-            s.runTaskTimer(CustomStructures.plugin, 1, 10);
+            new StructurePicker(block, chunk, plugin).runTaskTimer(plugin, 1, 10);
         } catch (RuntimeException ex) {
             // ignore, error already logged.
         }

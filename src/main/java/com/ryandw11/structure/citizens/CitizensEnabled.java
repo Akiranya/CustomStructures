@@ -1,6 +1,7 @@
 package com.ryandw11.structure.citizens;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.NpcHandler;
 import net.citizensnpcs.api.CitizensAPI;
@@ -190,7 +191,7 @@ public class CitizensEnabled implements CitizensNpcHook {
             out.writeBytes("url=" + URLEncoder.encode(url, "UTF-8"));
             out.close();
             reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            Map<String, Object> skinInfo = (Map<String, Object>) new Gson().fromJson(reader, Map.class);
+            Map<String, Object> skinInfo = new Gson().fromJson(reader, new TypeToken<>() {});
             con.disconnect();
             return skinInfo;
         } catch (Exception ex) {

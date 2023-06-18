@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The Add Item command for the plugin.
@@ -49,19 +50,19 @@ public class SetLoottableCommand implements SubCommand {
                 return true;
             }
 
-            if(plugin.getLootTableHandler().getLootTableByName(args[0]) == null) {
+            if (plugin.getLootTableHandler().getLootTableByName(args[0]) == null) {
                 sender.sendMessage(ChatColor.RED + "Cannot find specified loot table. Check to make sure that it exists.");
                 return true;
             }
 
             Block block = p.getTargetBlock(null, 20);
-            if(!(block.getState() instanceof Container container)) {
+            if (!(block.getState() instanceof Container container)) {
                 sender.sendMessage(ChatColor.RED + "You must be looking at a container to set its loot table.");
                 return true;
             }
             container.getInventory().clear();
             ItemStack paper = new ItemStack(Material.PAPER, 1);
-            ItemMeta itemMeta = paper.getItemMeta();
+            ItemMeta itemMeta = Objects.requireNonNull(paper.getItemMeta());
             itemMeta.setDisplayName("%${" + args[0] + "}$%");
             itemMeta.setLore(List.of("Defines a specific loot table for this container to use.", "This must be in the first item slot to work."));
             paper.setItemMeta(itemMeta);

@@ -19,6 +19,7 @@ public class StructureLocation implements StructureProperty {
     private StructureYSpawning spawnY;
     private List<String> biomes;
     private double distanceFromOthers;
+    private double distanceFromSame;
     private int xLimitation;
     private int zLimitation;
 
@@ -43,7 +44,7 @@ public class StructureLocation implements StructureProperty {
         ConfigurationSection cs = fileConfiguration.getConfigurationSection("StructureLocation");
         if (cs == null)
             throw new StructureConfigurationException("The `StructureLocation` property is mandatory, please add one to the file for the " +
-                    "structure to be valid.");
+                                                      "structure to be valid.");
         if (cs.contains("Worlds"))
             this.worlds = cs.getStringList("Worlds");
         else
@@ -59,15 +60,18 @@ public class StructureLocation implements StructureProperty {
         else
             this.distanceFromOthers = 100;
 
+        if (cs.contains("DistanceFromSame"))
+            this.distanceFromSame = Math.max(0, cs.getDouble("DistanceFromSame"));
+        else
+            this.distanceFromSame = 100;
+
         xLimitation = 0;
         zLimitation = 0;
-        if (cs.contains("spawn_distance")) {
-            if (cs.contains("spawn_distance.x")) {
-                xLimitation = cs.getInt("spawn_distance.x");
-            }
-            if (cs.contains("spawn_distance.z")) {
-                zLimitation = cs.getInt("spawn_distance.z");
-            }
+        if (cs.contains("SpawnDistance.x")) {
+            xLimitation = cs.getInt("SpawnDistance.x");
+        }
+        if (cs.contains("SpawnDistance.z")) {
+            zLimitation = cs.getInt("SpawnDistance.z");
         }
     }
 
@@ -85,6 +89,7 @@ public class StructureLocation implements StructureProperty {
         this.spawnY = spawnSettings;
         this.biomes = biomes;
         this.distanceFromOthers = 100;
+        this.distanceFromSame = 100;
         this.xLimitation = 0;
         this.zLimitation = 0;
     }
@@ -205,16 +210,16 @@ public class StructureLocation implements StructureProperty {
     }
 
     /**
-     * Get the distance from others value.
+     * Get the minimum distance from other structures.
      *
-     * @return The distance from others value.
+     * @return The minimum distance from other structures.
      */
     public double getDistanceFromOthers() {
         return distanceFromOthers;
     }
 
     /**
-     * Set the distance from others value.
+     * Set the minimum distance from other structures.
      *
      * @param distance The distance desired (Must be positive).
      */
@@ -222,6 +227,26 @@ public class StructureLocation implements StructureProperty {
         if (distance < 0)
             throw new IllegalArgumentException("Distance must be greater than 0!");
         this.distanceFromOthers = distance;
+    }
+
+    /**
+     * Get the minimum distance from other structures of the same time.
+     *
+     * @return Minimum distance from structures.
+     */
+    public double getDistanceFromSame() {
+        return distanceFromSame;
+    }
+
+    /**
+     * Set the distance requirement for the same structures.
+     *
+     * @param distance Minimum distance from other structures of the same type.
+     */
+    public void setDistanceFromSame(double distance) {
+        if (distance < 0)
+            throw new IllegalArgumentException("Distance must be greater than 0!");
+        this.distanceFromSame = distance;
     }
 
     /**
@@ -235,8 +260,8 @@ public class StructureLocation implements StructureProperty {
         configurationSection.set("Biome", biomes);
         configurationSection.set("DistanceFromOthers", distanceFromOthers);
         if (xLimitation > 0)
-            configurationSection.set("spawn_distance.x", xLimitation);
+            configurationSection.set("SpawnDistance.x", xLimitation);
         if (zLimitation > 0)
-            configurationSection.set("spawn_distance.z", zLimitation);
+            configurationSection.set("SpawnDistance.z", zLimitation);
     }
 }

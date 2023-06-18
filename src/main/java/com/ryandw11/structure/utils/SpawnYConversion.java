@@ -24,7 +24,7 @@ public final class SpawnYConversion {
                     int num1 = Integer.parseInt(out[0]);
                     int num2 = Integer.parseInt(out[1]);
 
-                    return String.format("+[%s;%s]", num1, num2);
+                    return "+[%s;%s]".formatted(num1, num2);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                     throw new IllegalArgumentException("Unable to convert SpawnY value since it is invalid!");
@@ -38,7 +38,7 @@ public final class SpawnYConversion {
                     int num1 = Integer.parseInt(out[0]);
                     int num2 = Integer.parseInt(out[1]);
 
-                    return String.format("-[%s;%s]", num1, num2);
+                    return "-[%s;%s]".formatted(num1, num2);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                     throw new IllegalArgumentException("Unable to convert SpawnY value since it is invalid!");
@@ -52,7 +52,7 @@ public final class SpawnYConversion {
                     int num1 = Integer.parseInt(out[0]);
                     int num2 = Integer.parseInt(out[1]);
 
-                    return String.format("[%s;%s]", num1, num2);
+                    return "[%s;%s]".formatted(num1, num2);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                     throw new IllegalArgumentException("Unable to convert SpawnY value since it is invalid!");
@@ -63,7 +63,7 @@ public final class SpawnYConversion {
         else if (value.startsWith("+")) {
             String v = value.replace("+", "");
             try {
-                return String.format("+[%s]", v);
+                return "+[%s]".formatted(v);
             } catch (NumberFormatException ex) {
                 throw new IllegalArgumentException("Unable to convert SpawnY value since it is invalid!");
             }
@@ -74,7 +74,7 @@ public final class SpawnYConversion {
 
             try {
                 int num = Integer.parseInt(v);
-                return String.format("-[%s]", num);
+                return "-[%s]".formatted(num);
             } catch (NumberFormatException ex) {
                 throw new IllegalArgumentException("Unable to convert SpawnY value since it is invalid!");
             }

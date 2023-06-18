@@ -15,7 +15,10 @@ import java.util.List;
 public final class AddonHandler {
     private final List<CustomStructureAddon> addons;
 
-    protected AddonHandler() {
+    /**
+     * <p>Internal use only. Access the existing instance of this class from {@link CustomStructures#getAddonHandler()}.</p>
+     */
+    AddonHandler() {
         this.addons = new ArrayList<>();
     }
 
@@ -37,6 +40,17 @@ public final class AddonHandler {
         if (addons.contains(addon))
             throw new IllegalArgumentException("Addon is already registered!");
         addons.add(addon);
+    }
+
+    /**
+     * Handles re-registering items from addons when the plugin is reloaded.
+     *
+     * <p>Internal Use Only.</p>
+     */
+    public void handlePluginReload() {
+        for (CustomStructureAddon addon : addons) {
+            addon.handlePluginReload();
+        }
     }
 
 }

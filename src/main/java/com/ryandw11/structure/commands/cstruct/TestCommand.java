@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
  * <p>Permission: customstructures.test</p>
  *
  * <code>
- *     /cstruct test {struct_name}
+ * /cstruct test {struct_name}
  * </code>
  */
 public class TestCommand implements SubCommand {
@@ -27,7 +27,7 @@ public class TestCommand implements SubCommand {
 
     @Override
     public boolean subCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if(args.length != 1){
+        if (args.length != 1) {
             sender.sendMessage(ChatColor.RED + "Invalid arguments. /cstruct test {name}");
             return true;
         }

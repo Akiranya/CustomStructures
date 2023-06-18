@@ -21,20 +21,24 @@ public class SCommandTab implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
         List<String> completions = null;
-        if (args.length == 2 && (args[0].equalsIgnoreCase("test") || args[0].equalsIgnoreCase("testspawn"))) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("test") || args[0].equalsIgnoreCase("testspawn") || args[0].equalsIgnoreCase("nearby"))) {
             completions = plugin.getStructureHandler().getStructureNames();
             completions = getApplicableTabCompleter(args[1], completions);
         } else if (args.length == 2 && (
-                args[0].equalsIgnoreCase("setLootTable") ||
-                args[0].equalsIgnoreCase("setLoot") ||
-                args[0].equalsIgnoreCase("setlt"))) {
+            args[0].equalsIgnoreCase("setLootTable") ||
+            args[0].equalsIgnoreCase("setLoot") ||
+            args[0].equalsIgnoreCase("setlt") ||
+            args[0].equalsIgnoreCase("testLootTable") ||
+            args[0].equalsIgnoreCase("testlt") ||
+            args[0].equalsIgnoreCase("testLoot")
+        )) {
             completions = plugin.getLootTableHandler().getLootTablesNames();
             completions = getApplicableTabCompleter(args[1], completions);
         } else if (args.length == 3 && args[0].equalsIgnoreCase("addItem")) {
             completions = Arrays.asList("--overwrite");
         } else if (args.length <= 1) {
             completions = Arrays.asList("reload", "test", "list", "addItem", "checkKey", "getItem",
-                    "createSchem", "create", "nearby", "testspawn", "addons", "setLootTable");
+                "createSchem", "create", "nearby", "testspawn", "addons", "setLootTable", "testLootTable");
             completions = getApplicableTabCompleter(args.length == 1 ? args[0] : "", completions);
         }
         if (completions == null) {

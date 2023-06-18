@@ -3,21 +3,13 @@ package com.ryandw11.structure.structure;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.CustomStructuresAPI;
 import com.ryandw11.structure.exceptions.StructureConfigurationException;
-import com.ryandw11.structure.io.StructureFileReader;
+import com.ryandw11.structure.io.StructureDatabaseHandler;
 import com.ryandw11.structure.threading.CheckStructureList;
 import com.ryandw11.structure.utils.Pair;
 import org.bukkit.Location;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * This handler manages the list of active structures.
@@ -25,19 +17,19 @@ import java.util.stream.Collectors;
  * You can access this handler from {@link CustomStructuresAPI#getStructureHandler()} or
  * {@link CustomStructures#getStructureHandler()}.
  * <p>
- * <b>Note:</b> Do not store a long term instance of this class as it can be null when the {@code /cstruct reload}
+ * <b>Note:</b> Do not store a long term instance of this class as it can be invalidated when the {@code /cstruct reload}
  * command is done.
  */
 public class StructureHandler {
 
     private final SortedMap<Pair<Location, Long>, Structure> spawnedStructures = new TreeMap<>(
-            Comparator.comparingDouble(o -> o.getLeft().distance(new Location(o.getLeft().getWorld(), 0, 0, 0)))
+        Comparator.comparingDouble(o -> o.getLeft().distance(new Location(o.getLeft().getWorld(), 0, 0, 0)))
     );
 
     private final List<Structure> structures;
     private final List<String> names;
     private final CheckStructureList checkStructureList;
-    private StructureFileReader structureFileReader;
+    private StructureDatabaseHandler structureDatabaseHandler;
 
     /**
      * Constructor for the structure handler.
@@ -82,8 +74,8 @@ public class StructureHandler {
         checkStructureList.runTaskTimerAsynchronously(cs, 20, 6000);
 
         if (cs.getConfig().getBoolean("logStructures")) {
-            structureFileReader = new StructureFileReader(cs);
-            structureFileReader.runTaskTimerAsynchronously(cs, 20, 300);
+            structureDatabaseHandler = new StructureDatabaseHandler(cs);
+            structureDatabaseHandler.runTaskTimerAsynchronously(cs, 20, 300);
         }
     }
 
@@ -150,8 +142,8 @@ public class StructureHandler {
      */
     public void putSpawnedStructure(Location loc, Structure struct) {
         synchronized (spawnedStructures) {
-            if (structureFileReader != null) {
-                structureFileReader.addStructure(loc, struct);
+            if (structureDatabaseHandler != null) {
+                structureDatabaseHandler.addStructure(loc, struct);
             }
             this.spawnedStructures.put(Pair.of(loc, System.currentTimeMillis()), struct);
         }
@@ -178,13 +170,37 @@ public class StructureHandler {
     }
 
     /**
-     * Get the structure file reader.
+     * Calculate if the structure is far enough away from other structures of the same type.
+     *
+     * @param struct   The structure to calculate.
+     * @param location The location where the structure would spawn.
+     * @return If the distance is valid according to its config.
+     */
+    public boolean validSameDistance(Structure struct, Location location) {
+
+        synchronized (spawnedStructures) {
+            double closest = Double.MAX_VALUE;
+            for (Map.Entry<Pair<Location, Long>, Structure> entry : spawnedStructures.entrySet()) {
+                if (entry.getKey().getLeft().getWorld() != location.getWorld())
+                    continue;
+                if (!Objects.equals(entry.getValue().getName(), struct.getName()))
+                    continue;
+                if (entry.getKey().getLeft().distance(location) < closest)
+                    closest = entry.getKey().getLeft().distance(location);
+            }
+            return struct.getStructureLocation().getDistanceFromSame() < closest;
+        }
+
+    }
+
+    /**
+     * Get the structure database handler.
      * <p>This feature must be enabled via the config.</p>
      *
-     * @return An Optional of the StructureFileReader.
+     * @return An Optional of the StructureDatabaseHandler.
      */
-    public Optional<StructureFileReader> getStructureFileReader() {
-        return Optional.ofNullable(structureFileReader);
+    public Optional<StructureDatabaseHandler> getStructureDatabaseHandler() {
+        return Optional.ofNullable(structureDatabaseHandler);
     }
 
     /**
@@ -192,8 +208,9 @@ public class StructureHandler {
      */
     public void cleanup() {
         checkStructureList.cancel();
-        if (structureFileReader != null)
-            structureFileReader.cancel();
+        if (structureDatabaseHandler != null) {
+            structureDatabaseHandler.cancel();
+        }
         spawnedStructures.clear();
     }
 }

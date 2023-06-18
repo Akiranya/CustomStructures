@@ -38,7 +38,7 @@ public class AdvancedSubSchematics {
             try {
                 for (String schemName : Objects.requireNonNull(section.getConfigurationSection(category)).getKeys(false)) {
                     SubSchematic schem = new SubSchematic(
-                            Objects.requireNonNull(section.getConfigurationSection(String.format("%s.%s", category, schemName))),
+                            Objects.requireNonNull(section.getConfigurationSection("%s.%s".formatted(category, schemName))),
                             true);
                     schematics.add(schem.getWeight(), schem);
                 }

@@ -66,18 +66,10 @@ public final class Duration {
             num = 0D;
         }
         switch (unit) {
-            case 'd':
-                num *= (double) 60 * 60 * 24;
-                break;
-            case 'h':
-                num *= (double) 60 * 60;
-                break;
-            case 'm':
-                num *= (double) 60;
-                break;
-            default:
-            case 's':
-                break;
+            case 'd' -> num *= 60D * 60D * 24D;
+            case 'h' -> num *= 60D * 60D;
+            case 'm' -> num *= 60D;
+            default -> {}
         }
         return (int) num;
     }

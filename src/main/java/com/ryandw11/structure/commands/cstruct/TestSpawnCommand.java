@@ -55,21 +55,20 @@ public class TestSpawnCommand implements SubCommand {
             return true;
         }
         p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&b=================[&6" + structure.getName() + "&b]================="));
-        psuedoCalculate(p, structure, p.getLocation().getBlock(), p.getLocation().getChunk());
+            "&b=================[&6" + structure.getName() + "&b]================="));
+        pseudoCalculate(p, structure, p.getLocation().getBlock(), p.getLocation().getChunk());
         p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&b=================[&6" + structure.getName() + "&b]================="));
+            "&b=================[&6" + structure.getName() + "&b]================="));
         return true;
     }
 
-    void psuedoCalculate(Player p, Structure structure, Block bl, Chunk ch) {
+    void pseudoCalculate(Player p, Structure structure, Block bl, Chunk ch) {
 
         IgnoreBlocks ignoreBlocks = plugin.getBlockIgnoreManager();
 
         StructureYSpawning structureSpawnSettings = structure.getStructureLocation().getSpawnSettings();
 
         bl = structureSpawnSettings.getHighestBlock(bl.getLocation());
-        ;
 
         // Calculate the chance.
         canSpawn(p, structure, bl, ch);
@@ -91,12 +90,12 @@ public class TestSpawnCommand implements SubCommand {
         }
 
         if (!structure.getStructureLimitations().hasWhitelistBlock(bl)) {
-            quickSendMessage(p, String.format("&cFailed Block Limitation! Cannot spawn on %s! (Whitelist Defined)", bl.getType()));
+            quickSendMessage(p, "&cFailed Block Limitation! Cannot spawn on %s! (Whitelist Defined)".formatted(bl.getType()));
             return;
         }
 
-        if(structure.getStructureLimitations().hasBlacklistBlock(bl)) {
-            quickSendMessage(p, String.format("&cFailed Block Limitation! Cannot spawn on %s! (Blacklist Defined)", bl.getType()));
+        if (structure.getStructureLimitations().hasBlacklistBlock(bl)) {
+            quickSendMessage(p, "&cFailed Block Limitation! Cannot spawn on %s! (Blacklist Defined)".formatted(bl.getType()));
             return;
         }
 
@@ -123,8 +122,8 @@ public class TestSpawnCommand implements SubCommand {
         }
 
         // If the structure is going to be cut off by the world height limit, pick a new structure.
-        if(structure.getStructureLimitations().getWorldHeightRestriction() != -1 &&
-                bl.getLocation().getY() > ch.getWorld().getMaxHeight() - structure.getStructureLimitations().getWorldHeightRestriction()) {
+        if (structure.getStructureLimitations().getWorldHeightRestriction() != -1 &&
+            bl.getLocation().getY() > ch.getWorld().getMaxHeight() - structure.getStructureLimitations().getWorldHeightRestriction()) {
             quickSendMessage(p, "&cFailed World Height Restriction!");
             return;
         }
@@ -197,10 +196,12 @@ public class TestSpawnCommand implements SubCommand {
 
         if (!CustomStructures.getInstance().getStructureHandler().validDistance(structure, block.getLocation()))
             quickSendMessage(p, "&cFailed Distance Limitation test! Cannot spawn this close to another structure!");
+        if (!CustomStructures.getInstance().getStructureHandler().validSameDistance(structure, block.getLocation()))
+            quickSendMessage(p, "&cFailed Distance Limitation test! Cannot spawn this close to the same structure!");
 
         // Check to see if the structure has the chance to spawn
-        if (ThreadLocalRandom.current().nextInt(0, structure.getChanceOutOf() + 1) > structure.getChanceNumber())
-            quickSendMessage(p, "&eDid not spawn by probability!");
+        if (ThreadLocalRandom.current().nextInt(0, structure.getProbabilityDenominator() + 1) > structure.getProbabilityNumerator())
+            quickSendMessage(p, "&eDid not spawn by probability! (%d/%d chance)".formatted(structure.getProbabilityNumerator(), structure.getProbabilityDenominator()));
 
         // Check to see if the structure can spawn in the current biome.
         if (!structure.getStructureLocation().hasBiome(block.getBiome()))
