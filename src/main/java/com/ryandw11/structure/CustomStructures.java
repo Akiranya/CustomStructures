@@ -420,7 +420,7 @@ public class CustomStructures extends JavaPlugin {
             }
 
             File backupDirectory = new File(getDataFolder(), "backup");
-            File backupdata = new File(backupDirectory, ".backups");
+            File backupData = new File(backupDirectory, ".backups");
             if (!backupDirectory.exists()) {
                 if (!backupDirectory.mkdir()) {
                     getLogger().severe("Error: Unable to create backup directory!");
@@ -428,16 +428,16 @@ public class CustomStructures extends JavaPlugin {
                 }
             }
 
-            if (!backupdata.exists()) {
+            if (!backupData.exists()) {
                 try {
-                    backupdata.createNewFile();
+                    backupData.createNewFile();
                 } catch (IOException ex) {
                     getLogger().severe("Error: Unable to create backup file.");
                     return;
                 }
             }
 
-            FileConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(backupdata);
+            FileConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(backupData);
 
             if (fileConfiguration.contains("backupVer")) {
                 int backupVer = fileConfiguration.getInt("backupVer");
@@ -451,7 +451,7 @@ public class CustomStructures extends JavaPlugin {
             } else {
                 fileConfiguration.set("backupVer", 8);
                 try {
-                    fileConfiguration.save(backupdata);
+                    fileConfiguration.save(backupData);
                 } catch (IOException ex) {
                     getLogger().severe("A critical error has occurred while backing up the plugin data.");
                     return;
@@ -510,7 +510,7 @@ public class CustomStructures extends JavaPlugin {
                     // Add the updated structure to the list.
                     updatedStructures.add(s);
                     fileConfiguration.set("UpdatedStructures", updatedStructures);
-                    fileConfiguration.save(backupdata);
+                    fileConfiguration.save(backupData);
                 } catch (Exception ex) {
                     getLogger().severe("An error has occurred when updating %s:".formatted(s));
                     ex.printStackTrace();
