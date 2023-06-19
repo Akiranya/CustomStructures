@@ -139,8 +139,7 @@ public class Structure {
      *
      * @return The name of the compiled schematic (null if it is not compiled).
      */
-    @Nullable
-    public String getCompiledSchematic() {
+    public @Nullable String getCompiledSchematic() {
         return compiledSchematic;
     }
 

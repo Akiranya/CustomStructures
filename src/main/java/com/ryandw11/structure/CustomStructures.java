@@ -98,8 +98,8 @@ public class CustomStructures extends JavaPlugin {
     @Override
     public void onEnable() {
         enabled = true;
-
         plugin = this;
+
         loadCommands();
         registerConfig();
         registerListeners();
@@ -114,7 +114,6 @@ public class CustomStructures extends JavaPlugin {
             this.getLogger().info("PlaceholderAPI not found.");
         }
 
-
         // Setup Citizens dependency.
         if (getServer().getPluginManager().getPlugin("Citizens") != null) {
             citizensNpcHook = new CitizensEnabled(this);
@@ -122,6 +121,7 @@ public class CustomStructures extends JavaPlugin {
         } else {
             citizensNpcHook = new CitizensDisabled();
         }
+
         // Setup Mythic Mobs dependency.
         if (getServer().getPluginManager().getPlugin("MythicMobs") != null) {
             mythicalMobHook = new MMEnabled();
@@ -160,10 +160,8 @@ public class CustomStructures extends JavaPlugin {
         // Run this after the loading of all plugins.
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::initialize, 30);
 
-
         if (getConfig().getBoolean("bstats")) {
             metrics = new Metrics(this, 7056);
-
             getLogger().info("Bstat metrics for this plugin is enabled. Disable it in the config if you do not want it on.");
         } else {
             getLogger().info("Bstat metrics is disabled for this plugin.");
@@ -197,6 +195,7 @@ public class CustomStructures extends JavaPlugin {
                 return valueMap;
             }));
         }
+
         initialized = true;
     }
 
