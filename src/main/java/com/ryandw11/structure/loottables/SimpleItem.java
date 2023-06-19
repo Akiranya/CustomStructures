@@ -14,26 +14,22 @@ import java.util.List;
  */
 public class SimpleItem extends LootItem implements Matchable {
 
-    @NotNull private final Material mat;
+    private final @NotNull Material mat;
 
     protected SimpleItem(
             int weight,
             @NotNull String amount,
-            @NotNull Material mat) {
+            @NotNull Material mat
+    ) {
         super(weight, amount);
         this.mat = mat;
     }
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack itemStack = new ItemStack(mat);
         itemStack.setAmount(getAmount());
         return Collections.singletonList(itemStack);
-    }
-
-    @Override
-    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
-        return getItemStack();
     }
 
     @Override

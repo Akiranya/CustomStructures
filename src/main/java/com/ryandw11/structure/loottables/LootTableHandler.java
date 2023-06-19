@@ -3,6 +3,7 @@ package com.ryandw11.structure.loottables;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.CustomStructuresAPI;
 import com.ryandw11.structure.exceptions.LootTableException;
+import net.kyori.adventure.key.Key;
 
 import java.util.*;
 
@@ -30,7 +31,11 @@ public class LootTableHandler {
     public LootTable getLootTableByName(String lootTableName) {
         if (!lootTables.containsKey(lootTableName)) {
             try {
-                lootTables.put(lootTableName, new LootTable(lootTableName));
+                if (Key.parseable(lootTableName)) {
+                    lootTables.put(lootTableName, new MinecraftLootTable(lootTableName));
+                } else {
+                    lootTables.put(lootTableName, new StandardLootTable(lootTableName));
+                }
             } catch (LootTableException ex) {
                 CustomStructures.getInstance().getLogger().severe("There seems to be a problem with the \"" + lootTableName + "\" loot table:");
                 CustomStructures.getInstance().getLogger().severe(ex.getMessage());

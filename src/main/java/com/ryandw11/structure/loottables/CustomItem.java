@@ -30,10 +30,10 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class CustomItem extends LootItem implements Matchable {
 
-    @NotNull private final Material mat;
-    @Nullable private final String name;
-    @NotNull private final List<String> lore;
-    @NotNull private final Map<String, String> enchantments;
+    private final @NotNull Material mat;
+    private final @Nullable String name;
+    private final @NotNull List<String> lore;
+    private final @NotNull Map<String, String> enchantments;
     private final int customModelData;
 
     /**
@@ -54,7 +54,8 @@ public class CustomItem extends LootItem implements Matchable {
             @Nullable String name,
             @NotNull List<String> lore,
             @NotNull Map<String, String> enchantments,
-            int customModelData) {
+            int customModelData
+    ) {
         super(weight, amount);
         this.mat = mat;
         this.name = name;
@@ -64,7 +65,7 @@ public class CustomItem extends LootItem implements Matchable {
     }
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack item = new ItemStack(mat);
 
         // Set amount
@@ -94,11 +95,6 @@ public class CustomItem extends LootItem implements Matchable {
 
         item.setItemMeta(meta);
         return Collections.singletonList(item);
-    }
-
-    @Override
-    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
-        return getItemStack();
     }
 
     @Override

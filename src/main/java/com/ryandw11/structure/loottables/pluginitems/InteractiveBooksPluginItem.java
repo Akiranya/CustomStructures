@@ -14,13 +14,6 @@ import java.util.List;
 public class InteractiveBooksPluginItem extends PluginItem<IBook> {
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
-        ItemStack item = getPluginItem().getItem();
-        item.setAmount(getAmount());
-        return Collections.singletonList(item);
-    }
-
-    @Override
     public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack item = getPluginItem().getItem(player);
         item.setAmount(getAmount());

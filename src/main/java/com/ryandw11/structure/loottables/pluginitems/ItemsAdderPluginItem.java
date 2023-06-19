@@ -25,15 +25,10 @@ public class ItemsAdderPluginItem extends PluginItem<CustomStack> implements Mat
     }
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack itemStack = getPluginItem().getItemStack();
         itemStack.setAmount(getAmount());
         return Collections.singletonList(itemStack);
-    }
-
-    @Override
-    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
-        return getItemStack();
     }
 
     @Override

@@ -28,15 +28,10 @@ public class ComplexItem extends LootItem implements Matchable {
     }
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
+    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         ItemStack itemStack = InventorySerialization.decodeItemStack(itemAsBase64);
         itemStack.setAmount(getAmount());
         return Collections.singletonList(itemStack);
-    }
-
-    @Override
-    public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
-        return getItemStack();
     }
 
     @Override
@@ -72,9 +67,9 @@ public class ComplexItem extends LootItem implements Matchable {
 
         public @NotNull ComplexItem build() {
             return new ComplexItem(
-                    weight,
-                    amount,
-                    itemAsBase64
+                weight,
+                amount,
+                itemAsBase64
             );
         }
     }

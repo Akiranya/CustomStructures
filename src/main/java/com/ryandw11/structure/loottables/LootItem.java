@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Represents a loot item within a loot table.
  * <p>
- * The loot item is abstracted in a way that, it can either be a {@link org.bukkit.inventory.ItemStack}, or an abstract
- * form such as multiple item stacks from another {@link com.ryandw11.structure.loottables.LootTable} (i.e., a loot
- * table can contain another loot table - the nested loot tables are support).
+ * The loot item is abstracted in a way that it can either be a single {@link org.bukkit.inventory.ItemStack}, or an
+ * abstract form such as multiple item stacks from another {@link LootTable} (i.e., a loot table can contain another
+ * loot table - the nested loot tables are support).
  */
 public abstract class LootItem {
 
@@ -55,33 +55,15 @@ public abstract class LootItem {
     }
 
     /**
-     * Get the list of item stacks of this loot item.
-     * <p>
-     * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
-     * List#get(0). However, the returned list may contain multiple items if the implementation is
-     * {@link TableItem#getItemStack()} which returns all the drawn items from a loot table.
-     *
-     * @return a newly generated item stack of this loot item
-     */
-    abstract public @NotNull List<ItemStack> getItemStack();
-
-    /**
      * Get the list of item stacks of this loot item with the consideration of given player.
      * <p>
      * In most cases, the returned list is singleton. Caller can safely get the single item by simply calling
      * List#get(0). However, the returned list may contain multiple items if the implementation is
-     * {@link TableItem#getItemStack()} which returns all the drawn items from a loot table.
-     * <p>
-     * This method is preferred over {@link #getItemStack()} because it has the access to the player who triggers the
-     * loot generation. It may be useful for certain implementation of
-     * {@link com.ryandw11.structure.loottables.LootItem}, which can generate unique items for different players.
-     * Navigate the subclasses of {@link com.ryandw11.structure.loottables.LootItem} using your IDE for the details of
-     * implementation.
+     * {@link TableItem#getItemStack(Player)} which returns all the drawn items from a loot table.
      *
      * @param player the player who triggers the loot generation
      * @return a newly generated item stack of this loot item
-     * @see #getItemStack()
      */
-    abstract public @NotNull List<ItemStack> getItemStack(@NotNull Player player);
+    public abstract @NotNull List<ItemStack> getItemStack(@NotNull Player player);
 
 }

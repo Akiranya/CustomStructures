@@ -2,7 +2,6 @@ package com.ryandw11.structure.commands.cstruct;
 
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.commands.SubCommand;
-import com.ryandw11.structure.lootchest.LootContentPlacer;
 import com.ryandw11.structure.loottables.LootTable;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -10,10 +9,6 @@ import org.bukkit.block.Container;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 /**
  * The Add Item command for the plugin.
@@ -45,7 +40,7 @@ public class TestLootTableCommand implements SubCommand {
                 sender.sendMessage(ChatColor.RED + "You do not have permission for this command!");
                 return true;
             }
-            if (!(sender instanceof Player p)) {
+            if (!(sender instanceof Player player)) {
                 sender.sendMessage(ChatColor.RED + "This command is for players only!");
                 return true;
             }
@@ -55,7 +50,7 @@ public class TestLootTableCommand implements SubCommand {
                 return true;
             }
 
-            Block block = p.getTargetBlock(null, 20);
+            Block block = player.getTargetBlock(null, 20);
             if (!(block.getState() instanceof Container container)) {
                 sender.sendMessage(ChatColor.RED + "You must be looking at a container to set its loot table.");
                 return true;
@@ -63,9 +58,7 @@ public class TestLootTableCommand implements SubCommand {
             container.getInventory().clear();
 
             // Put loot contents
-            List<ItemStack> items = lootTable.drawAll();
-            Inventory inventory = container.getInventory();
-            LootContentPlacer.replaceContent(items, inventory);
+            lootTable.fillInventory(container.getInventory(), player);
 
             sender.sendMessage(ChatColor.GREEN + "The loot table has been applied to the container!");
         }

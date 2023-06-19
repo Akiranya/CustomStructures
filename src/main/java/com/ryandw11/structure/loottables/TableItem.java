@@ -18,25 +18,17 @@ public class TableItem extends LootItem {
     public TableItem(
             int weight,
             @NotNull String amount,
-            @NotNull LootTable table) {
+            @NotNull LootTable table
+    ) {
         super(weight, amount);
         this.table = table;
-    }
-
-    @Override
-    public @NotNull List<ItemStack> getItemStack() {
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < getAmount(); i++) {
-            stacks.addAll(table.drawAll());
-        }
-        return stacks;
     }
 
     @Override
     public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         List<ItemStack> stacks = new ArrayList<>();
         for (int i = 0; i < getAmount(); i++) {
-            stacks.addAll(table.drawAll(player));
+            stacks.addAll(table.populateLoot(player));
         }
         return stacks;
     }

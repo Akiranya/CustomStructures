@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type of a LootTable.
+ * The type of LootTable.
  */
 public enum LootTableType {
     CHEST(Material.CHEST),

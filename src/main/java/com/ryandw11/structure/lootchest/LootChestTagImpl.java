@@ -3,17 +3,12 @@ package com.ryandw11.structure.lootchest;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.LootInventoryRefillEvent;
 import com.ryandw11.structure.config.Duration;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 class LootChestTagImpl implements LootChestTag {
 

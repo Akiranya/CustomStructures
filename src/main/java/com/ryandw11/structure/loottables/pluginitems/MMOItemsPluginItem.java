@@ -30,14 +30,6 @@ public class MMOItemsPluginItem extends PluginItem<MMOItemTemplate> implements M
     }
 
     @Override
-    public @NotNull List<ItemStack> getItemStack() {
-        // This may generate a different version on each call if this item enabled RNG stats
-        ItemStack itemStack = getPluginItem().newBuilder().build().newBuilder().build();
-        Objects.requireNonNull(itemStack).setAmount(getAmount());
-        return Collections.singletonList(itemStack);
-    }
-
-    @Override
     public @NotNull List<ItemStack> getItemStack(@NotNull Player player) {
         // This may generate a different version on each call depending on the given player
         ItemStack itemStack = getPluginItem().newBuilder(player).build().newBuilder().build();

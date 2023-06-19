@@ -37,8 +37,8 @@ import java.util.*;
  */
 public class StructureBuilder {
 
-    private FileConfiguration config;
     private final CustomStructures plugin;
+    private FileConfiguration config;
 
     protected String name;
     protected String schematic;
@@ -83,7 +83,7 @@ public class StructureBuilder {
         this.schematic = schematic;
         this.priority = 100;
         this.baseRotation = 0;
-        lootTables = new HashMap<>();
+        this.lootTables = new HashMap<>();
         this.structureSections = sections;
     }
 
@@ -100,7 +100,7 @@ public class StructureBuilder {
         this.schematic = schematic;
         this.priority = 100;
         this.baseRotation = 0;
-        lootTables = new HashMap<>();
+        this.lootTables = new HashMap<>();
         this.structureSections = Arrays.asList(sections);
     }
 
@@ -116,40 +116,40 @@ public class StructureBuilder {
     public StructureBuilder(String name, File file) {
         if (!file.exists())
             throw new RuntimeException("Cannot build structure: That file does not exist!");
-        config = YamlConfiguration.loadConfiguration(file);
 
-        plugin = CustomStructures.getInstance();
+        this.plugin = CustomStructures.getInstance();
+        this.config = YamlConfiguration.loadConfiguration(file);
 
         this.name = name;
         this.structureSections = new ArrayList<>();
 
         checkValidity();
 
-        schematic = config.getString("Schematic");
-        probabilityNumerator = config.getInt("Probability.Numerator");
-        probabilityDenominator = config.getInt("Probability.Denominator");
-        priority = config.contains("Priority") ? config.getInt("Priority") : 100;
-        baseRotation = 0;
+        this.schematic = config.getString("Schematic");
+        this.probabilityNumerator = config.getInt("Probability.Numerator");
+        this.probabilityDenominator = config.getInt("Probability.Denominator");
+        this.priority = config.contains("Priority") ? config.getInt("Priority") : 100;
+        this.baseRotation = 0;
 
-        if (config.contains("CompiledSchematic")) {
-            isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + Objects.requireNonNull(config.getString("CompiledSchematic"))).exists();
+        if (this.config.contains("CompiledSchematic")) {
+            this.isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + Objects.requireNonNull(config.getString("CompiledSchematic"))).exists();
             if (!isCompiled) {
                 CustomStructures.getInstance().getLogger().severe("Invalid compiled schematic file for: " + name);
             } else {
-                compiledSchematic = config.getString("CompiledSchematic");
+                this.compiledSchematic = config.getString("CompiledSchematic");
             }
         }
 
-        structureLocation = new StructureLocation(config);
-        structureProperties = new StructureProperties(config);
-        structureLimitations = new StructureLimitations(config);
-        sourceMaskProperty = new MaskProperty("SourceMask", config);
-        targetMaskProperty = new MaskProperty("TargetMask", config);
-        subSchematics = new SubSchematics(config, CustomStructures.getInstance());
-        advancedSubSchematics = new AdvancedSubSchematics(config, CustomStructures.getInstance());
-        bottomSpaceFill = new BottomSpaceFill(config);
+        this.structureLocation = new StructureLocation(config);
+        this.structureProperties = new StructureProperties(config);
+        this.structureLimitations = new StructureLimitations(config);
+        this.sourceMaskProperty = new MaskProperty("SourceMask", config);
+        this.targetMaskProperty = new MaskProperty("TargetMask", config);
+        this.subSchematics = new SubSchematics(config, CustomStructures.getInstance());
+        this.advancedSubSchematics = new AdvancedSubSchematics(config, CustomStructures.getInstance());
+        this.bottomSpaceFill = new BottomSpaceFill(config);
 
-        lootTables = new HashMap<>();
+        this.lootTables = new HashMap<>();
         if (config.contains("LootTables")) {
             ConfigurationSection lootTableConfig = config.getConfigurationSection("LootTables");
             setLootTables(Objects.requireNonNull(lootTableConfig)); // Should never throw NPE
@@ -461,7 +461,7 @@ public class StructureBuilder {
 
         for (Map.Entry<LootTableType, RandomCollection<LootTable>> loot : lootTables.entrySet()) {
             for (Map.Entry<Double, LootTable> entry : loot.getValue().getMap().entrySet()) {
-                config.set("LootTables." + loot.getKey().toString() + "." + entry.getValue().getName(), entry.getKey());
+                config.set("LootTables." + loot.getKey().toString() + "." + entry.getValue().name(), entry.getKey());
             }
         }
         config.save(file);

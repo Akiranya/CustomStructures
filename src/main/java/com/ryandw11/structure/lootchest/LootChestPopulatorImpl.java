@@ -6,17 +6,13 @@ import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.loottables.LootTableType;
 import com.ryandw11.structure.structure.Structure;
 import com.ryandw11.structure.utils.RandomCollection;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,9 +25,9 @@ class LootChestPopulatorImpl implements LootChestPopulator {
         String lootTableName = null; // If this is given some value, that means this container is explicitly set to a loot table
         if (firstItem != null && firstItem.getType() == Material.PAPER) {
             if (firstItem.hasItemMeta()) {
-                @NotNull final ItemMeta meta = Objects.requireNonNull(firstItem.getItemMeta());
+                final ItemMeta meta = Objects.requireNonNull(firstItem.getItemMeta());
                 if (meta.hasDisplayName()) {
-                    @NotNull final String displayName = meta.getDisplayName().trim();
+                    final String displayName = meta.getDisplayName().trim();
                     if (displayName.startsWith("%${") && displayName.endsWith("}$%")) {
                         lootTableName = displayName.replace("%${", "").replace("}$%", "").trim();
                     }
@@ -48,7 +44,7 @@ class LootChestPopulatorImpl implements LootChestPopulator {
     }
 
     @Override
-    public void populateContents(@Nullable Player player, @NotNull Container container) {
+    public void populateContents(@NotNull Player player, @NotNull Container container) {
         final LootChestTag lootChestTag = container.getPersistentDataContainer().get(LootChestConstant.LOOT_CHEST, LootChestTagType.INSTANCE);
         if (lootChestTag == null) {
             return;
@@ -94,10 +90,7 @@ class LootChestPopulatorImpl implements LootChestPopulator {
 
         // Note that changes to the inventory must be done AFTER container.update()
         // Otherwise the changes would be somewhat not applied (be undone...?)
-
-        List<ItemStack> loots = lootTable.drawAll(player);
-        Inventory inventory = container.getInventory();
-        LootContentPlacer.replaceContent(loots, inventory);
+        lootTable.fillInventory(container.getInventory(), player);
     }
 
 }

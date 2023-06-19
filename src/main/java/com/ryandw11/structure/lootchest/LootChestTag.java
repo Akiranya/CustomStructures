@@ -1,10 +1,10 @@
 package com.ryandw11.structure.lootchest;
 
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.bukkit.persistence.PersistentDataContainer;
-import com.ryandw11.structure.structure.Structure;
 import com.ryandw11.structure.loottables.LootTable;
+import com.ryandw11.structure.structure.Structure;
+import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -16,7 +16,6 @@ import java.util.UUID;
  * this container should be filled with (if one is explicitly set), and whether this container should refill its
  * contents.
  */
-@SuppressWarnings("unused")
 public interface LootChestTag {
 
     static LootChestTag of(@NotNull String structureName, @Nullable String lootTableName) {
