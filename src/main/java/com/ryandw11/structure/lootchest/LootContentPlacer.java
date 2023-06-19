@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This class contains some utility methods to nicely put loot items in a loot chest.
+ * This class contains utility methods to nicely put loot items in a loot chest.
  */
 public final class LootContentPlacer {
 
@@ -38,7 +38,7 @@ public final class LootContentPlacer {
      * @param items     the loot items
      * @param inventory the inventory of the chest
      */
-    public static void replaceChestContent(List<ItemStack> items, Inventory inventory) {
+    private static void replaceChestContent(List<ItemStack> items, Inventory inventory) {
         for (ItemStack lootItem : items) {
             if (inventory.firstEmpty() < 0) return;
             for (int j = 0; j < lootItem.getAmount(); j++) {
@@ -75,7 +75,7 @@ public final class LootContentPlacer {
      * @param items     the loot items to populate the brewer with
      * @param inventory the inventory of the brewer
      */
-    static void replaceFurnaceContent(List<ItemStack> items, FurnaceInventory inventory) {
+    private static void replaceFurnaceContent(List<ItemStack> items, FurnaceInventory inventory) {
         ItemStack loot = items.get(0);
 
         ItemStack fuel = inventory.getFuel();
@@ -97,7 +97,7 @@ public final class LootContentPlacer {
      * @param items     the loot items to populate the furnace with
      * @param inventory the inventory of the furnace
      */
-    static void replaceBrewerContent(List<ItemStack> items, BrewerInventory inventory) {
+    private static void replaceBrewerContent(List<ItemStack> items, BrewerInventory inventory) {
         ItemStack loot = items.get(0);
 
         ItemStack ingredient = inventory.getIngredient();
@@ -117,7 +117,7 @@ public final class LootContentPlacer {
      * @param second the second item
      * @return true if the two items have the same metadata and type, otherwise false
      */
-    static boolean isSameItem(@NotNull ItemStack first, @NotNull ItemStack second) {
+    private static boolean isSameItem(@NotNull ItemStack first, @NotNull ItemStack second) {
         ItemMeta firstMeta = first.getItemMeta();
         ItemMeta secondMeta = second.getItemMeta();
         return first.getType().equals(second.getType()) && Objects.equals(firstMeta, secondMeta);
