@@ -1,7 +1,6 @@
 package com.ryandw11.structure.structure.properties;
 
 import com.ryandw11.structure.exceptions.StructureConfigurationException;
-import com.ryandw11.structure.structure.StructureBuilder;
 import org.bukkit.HeightMap;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,18 +21,6 @@ public class StructureLocation implements StructureProperty {
     private double distanceFromSame;
     private int xLimitation;
     private int zLimitation;
-
-    /**
-     * Create the Structure Location configuration section.
-     *
-     * @param sb            The Structure Builder.
-     * @param configuration The File Configuration.
-     * @deprecated Use {@link StructureLocation#StructureLocation(FileConfiguration)} instead.
-     */
-    @Deprecated
-    public StructureLocation(StructureBuilder sb, FileConfiguration configuration) {
-        this(configuration);
-    }
 
     /**
      * Create the Structure Location configuration section.

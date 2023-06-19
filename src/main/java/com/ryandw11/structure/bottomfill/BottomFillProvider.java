@@ -7,18 +7,7 @@ import java.util.List;
  * Provides the plugin with an implementation of the BottomFill feature.
  */
 public final class BottomFillProvider {
-    private final static List<BottomFillImpl> providers = new ArrayList<>();
-
-    /**
-     * Add a BottomFill implementation to the provider.
-     *
-     * @param bottomFill The bottom fill implementation.
-     * @deprecated Use {@link #addImplementation(BottomFillImpl)} instead.
-     */
-    @Deprecated
-    public static void addProvider(BottomFillImpl bottomFill) {
-        providers.add(bottomFill);
-    }
+    private static final List<BottomFillImpl> providers = new ArrayList<>();
 
     /**
      * Add a BottomFill implementation to the provider.

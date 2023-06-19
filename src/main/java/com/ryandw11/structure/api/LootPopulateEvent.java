@@ -81,15 +81,6 @@ public class LootPopulateEvent extends Event implements Cancellable {
     }
 
     /**
-     * @return the location of the container
-     * @deprecated Use {@link #getContainer()} to get the location
-     */
-    @Deprecated
-    public @NotNull Location getLocation() {
-        return container.getLocation();
-    }
-
-    /**
      * Get the selected loot table for the container.
      *
      * @return The selected loot table for the container.
@@ -113,22 +104,6 @@ public class LootPopulateEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean cancel) {
         canceled = cancel;
-    }
-
-    /**
-     * @deprecated Use {@link #setCancelled(boolean)}
-     */
-    @Deprecated(forRemoval = true)
-    public void setCanceled(boolean canceled) {
-        this.canceled = canceled;
-    }
-
-    /**
-     * @deprecated Use {@link #isCancelled()}
-     */
-    @Deprecated(forRemoval = true)
-    public boolean isCanceled() {
-        return canceled;
     }
 
     @Override

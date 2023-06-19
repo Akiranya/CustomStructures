@@ -97,17 +97,4 @@ public class CustomStructuresAPI {
     public String getSchematicsFolder() {
         return plugin.getDataFolder() + "/schematics/";
     }
-
-    /**
-     * Get if structures can spawn in the void.
-     *
-     * <p>This setting is set by the user in the config file.</p>
-     *
-     * @return Get if structures can spawn in the void.
-     * @deprecated Void spawning is now always enabled.
-     */
-    @Deprecated
-    public boolean isVoidSpawningEnabled() {
-        return true;
-    }
 }

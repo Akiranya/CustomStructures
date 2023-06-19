@@ -28,17 +28,11 @@ import java.util.Queue;
  * The default implementation for the bottom fill feature.
  */
 public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl {
-
     private Structure structure;
     private Location spawnLocation;
     private Material fillMaterial;
     private int minY;
     private Queue<BlockVector2> groundPlane; // The 2D plane which the blocks will be ground placed on
-
-    @Override
-    public void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc) {
-        // Deprecated
-    }
 
     @Override
     public void performFill(Structure structure, Location spawnLocation, Location minLoc, Location maxLoc, AffineTransform transform) {
@@ -143,5 +137,4 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
             }
         }
     }
-
 }

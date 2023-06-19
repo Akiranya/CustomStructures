@@ -19,27 +19,6 @@ public interface BottomFillImpl {
      * @param spawnLocation The spawn (paste) location of the structure.
      * @param minLoc        The minimum location of the structure in the world to paste onto.
      * @param maxLoc        The maximum location of the structure in the world to paste onto.
-     * @deprecated In favor of
-     * {@link #performFill(com.ryandw11.structure.structure.Structure, org.bukkit.Location, org.bukkit.Location, org.bukkit.Location, com.sk89q.worldedit.math.transform.AffineTransform)}.
-     * This method does not factor in a random rotation!
-     */
-    @Deprecated
-    void performFill(
-        Structure structure,
-        Location spawnLocation,
-        Location minLoc,
-        Location maxLoc
-    );
-
-    /**
-     * Called by the plugin when a bottom fill should be performed.
-     *
-     * <p>This will only be called if the BottomFill option is enabled.</p>
-     *
-     * @param structure     The structure that was spawned.
-     * @param spawnLocation The spawn (paste) location of the structure.
-     * @param minLoc        The minimum location of the structure in the world to paste onto.
-     * @param maxLoc        The maximum location of the structure in the world to paste onto.
      * @param transform     The affine transformation applied on this structure.
      */
     void performFill(
