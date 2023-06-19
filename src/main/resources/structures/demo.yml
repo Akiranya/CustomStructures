@@ -102,7 +102,6 @@ BottomSpaceFill:
   'DESERT': SANDSTONE
   'default': DIRT
 
-
 # List of lootTables for this Schematic, name, and weight.
 # Weight determines how often it will be chosen out of all the entries in the list.
 LootTables:
