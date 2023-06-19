@@ -27,9 +27,9 @@ public class ChunkLoad implements Listener {
             return;
         }
 
-        // Allow new chunk to be disabled.
-        boolean newChunks = plugin.getConfig().getBoolean("new_chunks");
-        if (newChunks && event.isNewChunk()) {
+        // "new_chunks = true": generate structures in all chunks
+        // "new_chunks = false": generate structures in new chunks
+        if (!event.isNewChunk() && !plugin.getConfig().getBoolean("new_chunks")) {
             return;
         }
 
