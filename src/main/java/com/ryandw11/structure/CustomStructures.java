@@ -312,7 +312,7 @@ public class CustomStructures extends JavaPlugin {
         this.structureHandler.cleanup();
         this.structureHandler = new StructureHandler(getConfig().getStringList("structures"), this);
         this.lootTableHandler = new LootTableHandler();
-        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "internal" + File.separator + "complexitems.yml"), new File(getDataFolder() + File.separator + "internal"));
+        this.complexItemManager = new ComplexItemManager(this, getDataFolderPath().resolve("internal").resolve("complexitems.yml").toFile(), getDataFolderPath().resolve("internal").toFile());
 
         // Update the addons.
         this.addonHandler.handlePluginReload();
