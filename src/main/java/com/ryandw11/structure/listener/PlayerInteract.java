@@ -8,7 +8,6 @@ import com.ryandw11.structure.lootchest.LootChestTag;
 import com.ryandw11.structure.lootchest.LootChestTagType;
 import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.structure.Structure;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -78,17 +77,13 @@ public class PlayerInteract implements Listener {
 
             Structure structure = Objects.requireNonNull(CustomStructures.getInstance().getStructureHandler().getStructure(structureName), "The structure named \"" + structureName + "\" in the loot chest tags was not found in the plugin config.");
             LootTable lootTable = explicitLootTableName.map(s -> Objects.requireNonNull(CustomStructures.getInstance().getLootTableHandler().getLootTableByName(s), "The loot table named \"" + s + "\" in the loot chest tags was not found in the plugin config. ")).orElse(null);
-            LootInventoryOpenEvent lootInventoryOpenEvent = new LootInventoryOpenEvent(
+            if (!new LootInventoryOpenEvent(
                 event.getPlayer(),
                 structure,
                 container,
                 lootChestTag,
                 lootTable
-            );
-
-            Bukkit.getServer().getPluginManager().callEvent(lootInventoryOpenEvent);
-
-            if (lootInventoryOpenEvent.isCancelled()) {
+            ).callEvent()) {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);
             }

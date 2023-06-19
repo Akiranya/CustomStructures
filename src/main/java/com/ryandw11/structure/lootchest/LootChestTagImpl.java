@@ -72,7 +72,7 @@ class LootChestTagImpl implements LootChestTag {
         }
 
         LootInventoryRefillEvent lootInventoryRefillEvent = new LootInventoryRefillEvent(player, this);
-        Bukkit.getServer().getPluginManager().callEvent(lootInventoryRefillEvent);
+        lootInventoryRefillEvent.callEvent();
         if (config.getBoolean("lootables.restrictPlayerReloot") && hasPlayerLooted(player)) {
             lootInventoryRefillEvent.setCancelled(true);
         }

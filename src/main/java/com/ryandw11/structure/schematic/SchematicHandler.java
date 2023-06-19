@@ -226,8 +226,7 @@ public class SchematicHandler {
                     SchematicLocationUtils.getMaximumLocation(clipboard, loc, 0),
                     containersAndSignsLocations
                 );
-                StructureSpawnEvent structureSpawnEvent = new StructureSpawnEvent(structure, loc, finalRotY, structureSpawnHolder);
-                Bukkit.getServer().getPluginManager().callEvent(structureSpawnEvent);
+                new StructureSpawnEvent(structure, loc, finalRotY, structureSpawnHolder).callEvent();
             }
 
         }, Math.round(structure.getStructureLimitations().getReplacementBlocksDelay() * 20));

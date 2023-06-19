@@ -80,9 +80,7 @@ class LootChestPopulatorImpl implements LootChestPopulator {
 
         // ---- Trigger the loot populate event ----
 
-        final LootPopulateEvent event = new LootPopulateEvent(player, structure, container, lootTable, lootChestTag);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        if (!new LootPopulateEvent(player, structure, container, lootTable, lootChestTag).callEvent()) {
             return;
         }
 
