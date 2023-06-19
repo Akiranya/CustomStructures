@@ -56,7 +56,7 @@ public class StructureDatabaseHandler extends BukkitRunnable {
     public StructureDatabaseHandler(CustomStructures plugin) {
         this.plugin = plugin;
 
-        File dataDirectory = new File(plugin.getDataFolder() + "/data/");
+        File dataDirectory = plugin.getDataFolderPath().resolve("data").toFile();
         if (!dataDirectory.exists())
             if (!dataDirectory.mkdir())
                 throw new StructureDatabaseException("Unable to create 'data' folder. Does the plugin have the correct permissions?");

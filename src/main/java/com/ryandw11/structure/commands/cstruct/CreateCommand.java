@@ -57,7 +57,7 @@ public class CreateCommand implements SubCommand {
                 sender.sendMessage(ChatColor.RED + "A structure with that name already exists!");
                 return true;
             }
-            File f = new File(plugin.getDataFolder() + File.separator + "structures" + File.separator + name + ".yml");
+            File f = plugin.getDataFolderPath().resolve("structures").resolve(name + ".yml").toFile();
             try {
                 if (!f.exists())
                     f.createNewFile();
@@ -70,7 +70,7 @@ public class CreateCommand implements SubCommand {
             }
             StructureBuilder builder = new StructureBuilder(name, schematic + ".schem");
             builder.setProbability(1, 1000);
-            if (new File(plugin.getDataFolder() + "/schematics/" + schematic + ".cschem").exists()) {
+            if (plugin.getDataFolderPath().resolve("schematics").resolve(schematic + ".cschem").toFile().exists()) {
                 builder.setCompiledSchematic(schematic + ".cschem");
             }
             builder.setStructureProperties(new StructureProperties());

@@ -38,17 +38,17 @@ public class StructureHandler {
      * {@link CustomStructures#getStructureHandler()} instead.
      *
      * @param stringStructs The list of structures.
-     * @param cs            The plugin.
+     * @param plugin        The plugin.
      */
-    public StructureHandler(List<String> stringStructs, CustomStructures cs) {
+    public StructureHandler(List<String> stringStructs, CustomStructures plugin) {
         structures = new ArrayList<>();
         names = new ArrayList<>();
-        cs.getLogger().info("Loading structures from files.");
+        plugin.getLogger().info("Loading structures from files.");
         for (String s : stringStructs) {
-            File struct = new File(cs.getDataFolder() + File.separator + "structures" + File.separator + s.replace(".yml", "") + ".yml");
+            File struct = plugin.getDataFolderPath().resolve("structures").resolve(s.replace(".yml", "") + ".yml").toFile();
             if (!struct.exists()) {
-                cs.getLogger().warning("Structure file: " + s + ".yml does not exist! Did you make a new structure file in the \"structures\" folder?");
-                cs.getLogger().warning("For more information please check to wiki.");
+                plugin.getLogger().warning("Structure file: " + s + ".yml does not exist! Did you make a new structure file in the \"structures\" folder?");
+                plugin.getLogger().warning("For more information please check to wiki.");
                 continue;
             }
             try {
@@ -56,26 +56,26 @@ public class StructureHandler {
                 structures.add(tempStruct);
                 names.add(tempStruct.getName());
             } catch (StructureConfigurationException ex) {
-                cs.getLogger().warning("The structure '" + s + "' has an invalid configuration file:");
-                cs.getLogger().warning(ex.getMessage());
+                plugin.getLogger().warning("The structure '" + s + "' has an invalid configuration file:");
+                plugin.getLogger().warning(ex.getMessage());
             } catch (Exception ex) {
-                cs.getLogger().severe("An unexpected error has occurred when trying to load the structure: " + s + ".");
-                cs.getLogger().severe("Please ensure that your configuration file is valid!");
-                if (cs.isDebug()) {
+                plugin.getLogger().severe("An unexpected error has occurred when trying to load the structure: " + s + ".");
+                plugin.getLogger().severe("Please ensure that your configuration file is valid!");
+                if (plugin.isDebug()) {
                     ex.printStackTrace();
                 } else {
-                    cs.getLogger().severe("Please enable debug mode to see the full error.");
+                    plugin.getLogger().severe("Please enable debug mode to see the full error.");
                 }
             }
         }
 
         checkStructureList = new CheckStructureList(this);
         // Run every 5 minutes.
-        checkStructureList.runTaskTimerAsynchronously(cs, 20, 6000);
+        checkStructureList.runTaskTimerAsynchronously(plugin, 20, 6000);
 
-        if (cs.getConfig().getBoolean("logStructures")) {
-            structureDatabaseHandler = new StructureDatabaseHandler(cs);
-            structureDatabaseHandler.runTaskTimerAsynchronously(cs, 20, 300);
+        if (plugin.getConfig().getBoolean("logStructures")) {
+            structureDatabaseHandler = new StructureDatabaseHandler(plugin);
+            structureDatabaseHandler.runTaskTimerAsynchronously(plugin, 20, 300);
         }
     }
 

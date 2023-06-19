@@ -38,6 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -62,7 +63,7 @@ public class CustomStructures extends JavaPlugin {
      */
     public static boolean enabled;
 
-    private final File lootTableFile = new File(getDataFolder() + "/lootTables/demo.yml");
+    private final File lootTableFile = getDataFolderPath().resolve("lootTables").resolve("demo.yml").toFile();
     private final FileConfiguration lootTablesFC = YamlConfiguration.loadConfiguration(lootTableFile);
 
     private MythicalMobHook mythicalMobHook;
@@ -94,6 +95,10 @@ public class CustomStructures extends JavaPlugin {
     public static final int CONFIG_VERSION = 9;
 
     private static boolean papiEnabled = false;
+
+    public Path getDataFolderPath() {
+        return getDataFolder().toPath();
+    }
 
     @Override
     public void onEnable() {
@@ -138,21 +143,21 @@ public class CustomStructures extends JavaPlugin {
             updateConfig(getConfig().getInt("configversion"));
         }
 
-        File f = new File(getDataFolder() + File.separator + "schematics");
+        File f = getDataFolderPath().resolve("schematics").toFile();
         if (!f.exists()) {
             getLogger().info("Loading the plugin for the first time.");
             getLogger().info("A demo structure will be added! Please make sure to test out this plugin in a test world!");
         }
 
-        exportResource(new File(getDataFolder(), "schematics"), "demo.schem", "schematics/");
-        exportResource(new File(getDataFolder(), "structures"), "demo.yml", "structures/");
+        exportResource(getDataFolderPath().resolve("schematics").toFile(), "demo.schem", "schematics/");
+        exportResource(getDataFolderPath().resolve("structures").toFile(), "demo.yml", "structures/");
         exportResource(getDataFolder(), "npcs.yml", "");
         exportResource(getDataFolder(), "signcommands.yml", "");
 
         // Configure the handlers and managers.
-        this.complexItemManager = new ComplexItemManager(this, new File(getDataFolder() + File.separator + "internal" + File.separator + "complexitems.yml"), new File(getDataFolder() + File.separator + "internal"));
-        this.signCommandsHandler = new SignCommandsHandler(getDataFolder(), this);
-        this.npcHandler = new NpcHandler(getDataFolder(), plugin);
+        this.complexItemManager = new ComplexItemManager(this, getDataFolderPath().resolve("internal").resolve("complexitems.yml").toFile(), getDataFolderPath().resolve("internal").toFile());
+        this.signCommandsHandler = new SignCommandsHandler(getDataFolderPath(), this);
+        this.npcHandler = new NpcHandler(getDataFolderPath(), plugin);
         this.lootTableHandler = new LootTableHandler();
         this.addonHandler = new AddonHandler();
         this.structureSignHandler = new StructureSignHandler();
@@ -301,9 +306,9 @@ public class CustomStructures extends JavaPlugin {
      */
     public void reloadHandlers() {
         this.signCommandsHandler.cleanUp();
-        this.signCommandsHandler = new SignCommandsHandler(getDataFolder(), this);
+        this.signCommandsHandler = new SignCommandsHandler(getDataFolderPath(), this);
         this.npcHandler.cleanUp();
-        this.npcHandler = new NpcHandler(getDataFolder(), plugin);
+        this.npcHandler = new NpcHandler(getDataFolderPath(), plugin);
         this.structureHandler.cleanup();
         this.structureHandler = new StructureHandler(getConfig().getStringList("structures"), this);
         this.lootTableHandler = new LootTableHandler();
@@ -413,14 +418,14 @@ public class CustomStructures extends JavaPlugin {
         if (ver < 8) {
             getLogger().info("Updating all structure config files...");
 
-            File structDir = new File(getDataFolder(), "structures");
+            File structDir = getDataFolderPath().resolve("structures").toFile();
             if (!structDir.exists() && !structDir.isDirectory()) {
                 getLogger().severe("An error occurred when trying to update the structure format: Unable to find structure directory! Does it exist?");
                 return;
             }
 
-            File backupDirectory = new File(getDataFolder(), "backup");
-            File backupData = new File(backupDirectory, ".backups");
+            File backupDirectory = getDataFolderPath().resolve("backup").toFile();
+            File backupData = backupDirectory.toPath().resolve(".backups").toFile();
             if (!backupDirectory.exists()) {
                 if (!backupDirectory.mkdir()) {
                     getLogger().severe("Error: Unable to create backup directory!");

@@ -179,7 +179,12 @@ public class SchematicHandler {
             List<Location> containersAndSignsLocations = new ArrayList<>();
             // If the structure is compiled, then grab the data from the cschem file.
             if (structure.isCompiled()) {
-                ObjectDataStructure ods = new ObjectDataStructure(new File(plugin.getDataFolder() + "/schematics/" + structure.getCompiledSchematic()));
+                ObjectDataStructure ods = new ObjectDataStructure(plugin
+                    .getDataFolderPath()
+                    .resolve("schematics")
+                    .resolve(Objects.requireNonNull(structure.getCompiledSchematic()))
+                    .toFile()
+                );
                 ListTag<ObjectTag> containers = ods.get("containers");
                 ListTag<ObjectTag> signs = ods.get("signs");
 
@@ -283,7 +288,7 @@ public class SchematicHandler {
                 e.printStackTrace();
             }
 
-            File file = new File(plugin.getDataFolder() + File.separator + "schematics" + File.separator + name + ".schem");
+            File file = plugin.getDataFolderPath().resolve("schematics").resolve(name + ".schem").toFile();
 
             try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
                 writer.write(clipboard);
@@ -387,7 +392,12 @@ public class SchematicHandler {
                 }
             }
         }
-        ObjectDataStructure ods = new ObjectDataStructure(new File(plugin.getDataFolder() + File.separator + "schematics" + File.separator + name + ".cschem"));
+        ObjectDataStructure ods = new ObjectDataStructure(plugin
+            .getDataFolderPath()
+            .resolve("schematics")
+            .resolve(name + ".cschem")
+            .toFile()
+        );
         ods.save(Arrays.asList(intTag, containers, signs));
         if (plugin.isDebug()) {
             plugin.getLogger().info("Successfully compiled the schematic: " + name);

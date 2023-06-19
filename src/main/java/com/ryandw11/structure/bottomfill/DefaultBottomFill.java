@@ -52,7 +52,11 @@ public class DefaultBottomFill extends BukkitRunnable implements BottomFillImpl 
             // ---- This part of code should be safe to run async ----
 
             // To get the ground plane, we need to read the schematic
-            File file = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + structure.getSchematic());
+            File file = CustomStructures.getInstance()
+                .getDataFolderPath()
+                .resolve("schematics")
+                .resolve(structure.getSchematic())
+                .toFile();
             ClipboardFormat format = ClipboardFormats.findByFile(file);
             if (format == null) {
                 CustomStructures.getInstance().getLogger().warning("Invalid schematic format for schematic " + structure.getSchematic());

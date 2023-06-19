@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,12 @@ public class SignCommandsHandler {
     /**
      * Processes the sign commands configuration
      *
-     * @param dataFolder The base plugin data folder.
-     * @param plugin     The instance of the Custom Structures plugin.
+     * @param dataFolderPath The base plugin data folder.
+     * @param plugin         The instance of the Custom Structures plugin.
      */
-    public SignCommandsHandler(File dataFolder, CustomStructures plugin) {
+    public SignCommandsHandler(Path dataFolderPath, CustomStructures plugin) {
         YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        File signCommandsFile = new File(dataFolder, "signcommands.yml");
+        File signCommandsFile = dataFolderPath.resolve("signcommands.yml").toFile();
         if (!signCommandsFile.exists()) {
             plugin.getLogger().warning("Warning: Cannot find signcommands.yml. This might be a configuration error.");
             return;

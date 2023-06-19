@@ -132,7 +132,10 @@ public class StructureBuilder {
         this.baseRotation = 0;
 
         if (this.config.contains("CompiledSchematic")) {
-            this.isCompiled = new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + Objects.requireNonNull(config.getString("CompiledSchematic"))).exists();
+            this.isCompiled = CustomStructures.getInstance().getDataFolderPath()
+                .resolve("schematics")
+                .resolve(Objects.requireNonNull(config.getString("CompiledSchematic")))
+                .toFile().exists();
             if (!isCompiled) {
                 CustomStructures.getInstance().getLogger().severe("Invalid compiled schematic file for: " + name);
             } else {
@@ -262,7 +265,7 @@ public class StructureBuilder {
      *               <p>An IllegalArgumentException is thrown when the file is not found.</p>
      */
     public void setCompiledSchematic(String cschem) {
-        if (!new File(CustomStructures.getInstance().getDataFolder() + "/schematics/" + cschem).exists())
+        if (!CustomStructures.getInstance().getDataFolderPath().resolve("schematics").resolve(cschem).toFile().exists())
             throw new IllegalArgumentException("Compiled Schem File not found!");
         this.compiledSchematic = cschem;
         this.isCompiled = true;

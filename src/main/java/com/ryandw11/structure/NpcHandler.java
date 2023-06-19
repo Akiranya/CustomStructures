@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,18 +21,18 @@ public class NpcHandler {
     /**
      * Processes the NPC configuration
      *
-     * @param dataFolder The base plugin data folder.
-     * @param plugin     The instance to the Custom Structures plugin.
+     * @param dataFolderPath The base plugin data folder.
+     * @param plugin         The instance to the Custom Structures plugin.
      */
-    public NpcHandler(File dataFolder, CustomStructures plugin) {
+    public NpcHandler(Path dataFolderPath, CustomStructures plugin) {
         YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        File npcFile = new File(dataFolder, "npcs.yml");
+        File npcFile = dataFolderPath.resolve("npcs.yml").toFile();
         if (!npcFile.exists()) {
             return;
         }
 
         try {
-            yamlConfiguration.load(new File(dataFolder, "npcs.yml"));
+            yamlConfiguration.load(dataFolderPath.resolve( "npcs.yml").toFile());
         } catch (Exception e) {
             plugin.getLogger().severe("There is a configuration error with: npcs.yml.");
             if (plugin.isDebug()) {
