@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class PluginItem<T> extends LootItem { // TODO depends on MewCore
 
-    @Nullable private String plugin;
-    @Nullable private String itemId;
+    private @Nullable String plugin;
+    private @Nullable String itemId;
 
     protected PluginItem() {
         super();
@@ -65,7 +65,7 @@ public abstract class PluginItem<T> extends LootItem { // TODO depends on MewCor
      *
      * @return the plugin item instance
      */
-    abstract public T getPluginItem();
+    public abstract T getPluginItem();
 
     public static class PluginLootItemBuilder {
         private int weight;
