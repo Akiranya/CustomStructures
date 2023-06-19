@@ -47,23 +47,23 @@ import java.util.*;
  * Handles schematic operations.
  */
 public class SchematicHandler {
-
     private SchematicHandler() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     /**
      * Handles the actual pasting of the structure.
      * <p>This method is to be called on the main Server thread.</p>
      *
-     * @param loc       - The location
-     * @param filename  - The file name. Ex: demo.schematic
-     * @param useAir    - if air is to be used in the schematic
-     * @param structure - The structure that is getting spawned.
-     * @param iteration - The number of iterations in a structure.
+     * @param location  The location.
+     * @param filename  The file name. Ex: demo.schematic
+     * @param useAir    If air is to be used in the schematic.
+     * @param structure The structure that is getting spawned.
+     * @param iteration The number of iterations in a structure.
      * @throws WorldEditException If world edit has a problem pasting the schematic.
      * @throws IOException        If an error occurs during file reading.
      */
-    public static void placeSchematic(Location loc, String filename, boolean useAir, Structure structure, int iteration)
+    public static void placeSchematic(Location location, String filename, boolean useAir, Structure structure, int iteration)
         throws IOException, WorldEditException {
 
         CustomStructures plugin = CustomStructures.getInstance();
@@ -74,7 +74,12 @@ public class SchematicHandler {
             return;
         }
 
-        File schematicFile = new File(plugin.getDataFolder() + "/schematics/" + filename);
+        File schematicFile = plugin.getDataFolder()
+            .toPath()
+            .resolve("schematics")
+            .resolve(filename)
+            .toFile();
+
         // Check to see if the schematic is a thing.
         if (!schematicFile.exists() && iteration == 0) {
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b[&aCustomStructures&b] &cA fatal error has occurred! Please check the console for errors."));
@@ -123,12 +128,10 @@ public class SchematicHandler {
         // Paste the schematic
         try (EditSession editSession = WorldEdit.getInstance()
             .getEditSessionFactory()
-            .getEditSession(BukkitAdapter.adapt(Objects.requireNonNull(loc.getWorld())), -1)
+            .getEditSession(BukkitAdapter.adapt(Objects.requireNonNull(location.getWorld(), "world")), -1)
         ) {
-             /*
-                Handle the masks of the structure.
-             */
-            Mask sourceMask = null;
+            // Handle the masks of the structure.
+            Mask sourceMask = null; // TODO This should be null if it's an empty list in the config
             if (structure.getSourceMaskProperties().getUnionType() == MaskProperty.MaskUnion.AND) {
                 sourceMask = new MaskIntersection(structure.getSourceMaskProperties().getMasks(clipboard));
             } else if (structure.getSourceMaskProperties().getUnionType() == MaskProperty.MaskUnion.OR) {
@@ -143,30 +146,30 @@ public class SchematicHandler {
             }
             editSession.setMask(targetMask);
 
-            Operation operation = ch.createPaste(editSession)
-                .to(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()))
+            Operation operation = ch
+                .createPaste(editSession)
+                .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
                 .maskSource(sourceMask)
                 .ignoreAirBlocks(!useAir)
                 .build();
-
             Operations.complete(operation);
 
             if (plugin.getConfig().getBoolean("debug")) {
-                plugin.getLogger().info("(%s) Created an instance of %s at %s, %s, %s with rotation %s".formatted(loc.getWorld().getName(), filename, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), rotY));
+                plugin.getLogger().info("(%s) Created an instance of %s at %s, %s, %s with rotation %s".formatted(location.getWorld().getName(), filename, location.getBlockX(), location.getBlockY(), location.getBlockZ(), rotY));
             }
         }
 
         // If enabled, perform a bottom space fill.
         if (structure.getBottomSpaceFill().isEnabled()) {
-            Location minLoc = SchematicLocationUtils.getMinimumLocation(clipboard, loc, rotY);
-            Location maxLoc = SchematicLocationUtils.getMaximumLocation(clipboard, loc, rotY);
+            Location minLoc = SchematicLocationUtils.getMinimumLocation(clipboard, location, rotY);
+            Location maxLoc = SchematicLocationUtils.getMaximumLocation(clipboard, location, rotY);
             int lowX = Math.min(minLoc.getBlockX(), maxLoc.getBlockX());
             int lowY = Math.min(minLoc.getBlockY(), maxLoc.getBlockY());
             int lowZ = Math.min(minLoc.getBlockZ(), maxLoc.getBlockZ());
             int highX = Math.max(minLoc.getBlockX(), maxLoc.getBlockX());
             int highY = Math.max(minLoc.getBlockY(), maxLoc.getBlockY());
             int highZ = Math.max(minLoc.getBlockZ(), maxLoc.getBlockZ());
-            BottomFillProvider.provide().performFill(structure, loc, new Location(minLoc.getWorld(), lowX, lowY, lowZ), new Location(minLoc.getWorld(), highX, highY, highZ), transform);
+            BottomFillProvider.provide().performFill(structure, location, new Location(minLoc.getWorld(), lowX, lowY, lowZ), new Location(minLoc.getWorld(), highX, highY, highZ), transform);
         }
 
         // Schedule the signs & containers replacement task
@@ -181,8 +184,8 @@ public class SchematicHandler {
                 ListTag<ObjectTag> signs = ods.get("signs");
 
                 // Get both the max and minimum points.
-                Location minimumPoint = SchematicLocationUtils.getMinimumLocation(clipboard, loc, 0);
-                Location maximumPoint = SchematicLocationUtils.getMaximumLocation(clipboard, loc, 0);
+                Location minimumPoint = SchematicLocationUtils.getMinimumLocation(clipboard, location, 0);
+                Location maximumPoint = SchematicLocationUtils.getMaximumLocation(clipboard, location, 0);
 
                 // Find the minimum of all three axises.
                 int minX = Math.min(minimumPoint.getBlockX(), maximumPoint.getBlockX());
@@ -191,42 +194,42 @@ public class SchematicHandler {
 
                 for (ObjectTag con : containers.getValue()) {
                     // Rotate con around the point and add the rotated min values.
-                    containersAndSignsLocations.add(SchematicLocationUtils.rotateAround(new BlockTag(con).getLocation(loc.getWorld()).add(minX, minY, minZ), loc, finalRotY));
+                    containersAndSignsLocations.add(SchematicLocationUtils.rotateAround(new BlockTag(con).getLocation(location.getWorld()).add(minX, minY, minZ), location, finalRotY));
                 }
                 for (ObjectTag sign : signs.getValue()) {
-                    containersAndSignsLocations.add(SchematicLocationUtils.rotateAround(new BlockTag(sign).getLocation(loc.getWorld()).add(minX, minY, minZ), loc, finalRotY));
+                    containersAndSignsLocations.add(SchematicLocationUtils.rotateAround(new BlockTag(sign).getLocation(location.getWorld()).add(minX, minY, minZ), location, finalRotY));
                 }
             } else {
                 // else find the data from the paste.
-                containersAndSignsLocations = getContainersAndSignsLocations(ch.getClipboard(), loc, finalRotY, structure);
+                containersAndSignsLocations = getContainersAndSignsLocations(ch.getClipboard(), location, finalRotY, structure);
             }
 
-            for (Location location : containersAndSignsLocations) {
-                if (location.getBlock().getState() instanceof Container container) {
+            for (Location loc : containersAndSignsLocations) {
+                if (loc.getBlock().getState() instanceof Container container) {
                     LootChestPopulator.instance().writeTags(structure, container);
                 }
-                if (location.getBlock().getState() instanceof Sign) {
+                if (loc.getBlock().getState() instanceof Sign) {
                     Location minLoc = SchematicLocationUtils.getMinimumLocation(clipboard, loc, finalRotY);
                     Location maxLoc = SchematicLocationUtils.getMaximumLocation(clipboard, loc, finalRotY);
-                    SchematicSignReplacer.processAndReplaceSign(location, minLoc, maxLoc, structure, finalRotY);
+                    SchematicSignReplacer.processAndReplaceSign(loc, minLoc, maxLoc, structure, finalRotY);
                 }
                 // If the sign still exists, it could be a sub-schematic sign.
-                if (location.getBlock().getState() instanceof Sign) {
-                    SchematicSignReplacer.replaceSignWithSchematic(location, structure, iteration);
+                if (loc.getBlock().getState() instanceof Sign) {
+                    SchematicSignReplacer.replaceSignWithSchematic(loc, structure, iteration);
                 }
             }
 
             // Replace the blocks of the structure (if enabled).
-            replaceBlocks(clipboard, loc, finalRotY, structure);
+            replaceBlocks(clipboard, location, finalRotY, structure);
 
             // Call the event for use by other plugins (only if it is the first iteration though.)
             if (iteration < 1) {
                 StructureSpawnHolder structureSpawnHolder = new StructureSpawnHolder(
-                    SchematicLocationUtils.getMinimumLocation(clipboard, loc, 0),
-                    SchematicLocationUtils.getMaximumLocation(clipboard, loc, 0),
+                    SchematicLocationUtils.getMinimumLocation(clipboard, location, 0),
+                    SchematicLocationUtils.getMaximumLocation(clipboard, location, 0),
                     containersAndSignsLocations
                 );
-                new StructureSpawnEvent(structure, loc, finalRotY, structureSpawnHolder).callEvent();
+                new StructureSpawnEvent(structure, location, finalRotY, structureSpawnHolder).callEvent();
             }
 
         }, Math.round(structure.getStructureLimitations().getReplacementBlocksDelay() * 20));
@@ -236,16 +239,16 @@ public class SchematicHandler {
      * Handles the schematic.
      * <p>This method is to be called on the main Server thread.</p>
      *
-     * @param loc       - The location
-     * @param filename  - The file name. Ex: demo.schematic
-     * @param useAir    - if air is to be used in the schematic
-     * @param structure - The structure that is getting spawned.
+     * @param location  The location.
+     * @param filename  The file name. Ex: demo.schematic
+     * @param useAir    If air is to be used in the schematic.
+     * @param structure The structure that is getting spawned.
      * @throws WorldEditException If world edit has a problem pasting the schematic.
      * @throws IOException        If an error occurs during file reading.
      */
-    public static void placeSchematic(Location loc, String filename, boolean useAir, Structure structure)
+    public static void placeSchematic(Location location, String filename, boolean useAir, Structure structure)
         throws IOException, WorldEditException {
-        placeSchematic(loc, filename, useAir, structure, 0);
+        placeSchematic(location, filename, useAir, structure, 0);
     }
 
     /**
@@ -253,17 +256,17 @@ public class SchematicHandler {
      *
      * @param name    The name of the schematic.
      * @param player  The player.
-     * @param w       The world
+     * @param world   The world.
      * @param compile If the schematic should be compiled.
      * @return If the operation was successful.
      */
-    public static boolean createSchematic(String name, Player player, World w, boolean compile) {
+    public static boolean createSchematic(String name, Player player, World world, boolean compile) {
         CustomStructures plugin = CustomStructures.getInstance();
 
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
             assert worldEditPlugin != null;
-            Region selection = worldEditPlugin.getSession(player).getSelection(BukkitAdapter.adapt(w));
+            Region selection = worldEditPlugin.getSession(player).getSelection(BukkitAdapter.adapt(world));
             CuboidRegion region = new CuboidRegion(selection.getWorld(), selection.getMinimumPoint(), selection.getMaximumPoint());
             BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
@@ -301,14 +304,14 @@ public class SchematicHandler {
      *
      * @param name   The name of the schematic.
      * @param player The player.
-     * @param w      The world
+     * @param world  The world.
      * @return If the operation was successful.
      */
-    public static boolean compileOnly(String name, Player player, World w) {
+    public static boolean compileOnly(String name, Player player, World world) {
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
             assert worldEditPlugin != null;
-            Region selection = worldEditPlugin.getSession(player).getSelection(BukkitAdapter.adapt(w));
+            Region selection = worldEditPlugin.getSession(player).getSelection(BukkitAdapter.adapt(world));
 
             compileSchem(player.getLocation(), selection, name);
             return true;
@@ -318,7 +321,7 @@ public class SchematicHandler {
     }
 
     /**
-     * Compiles a schematic
+     * Compiles a schematic.
      *
      * @param loc  The location of the player.
      * @param reg  The region of the schematic.
@@ -346,12 +349,15 @@ public class SchematicHandler {
                         if (blockState instanceof Chest chestBlockState) {
                             InventoryHolder holder = chestBlockState.getInventory().getHolder();
                             if (holder instanceof DoubleChest doubleChest) {
-                                Location leftSideLocation = ((Chest) doubleChest.getLeftSide()).getLocation();
-                                Location rightSideLocation = ((Chest) doubleChest.getRightSide()).getLocation();
+                                Location leftSideLocation = ((Chest) Objects.requireNonNull(doubleChest.getLeftSide(), "left side")).getLocation();
+                                Location rightSideLocation = ((Chest) Objects.requireNonNull(doubleChest.getRightSide(), "right side")).getLocation();
 
-                                Location roundedLocation = new Location(location.getWorld(),
-                                    Math.floor(location.getX()), Math.floor(location.getY()),
-                                    Math.floor(location.getZ()));
+                                Location roundedLocation = new Location(
+                                    location.getWorld(),
+                                    Math.floor(location.getX()),
+                                    Math.floor(location.getY()),
+                                    Math.floor(location.getZ())
+                                );
 
                                 // Check to see if this (or the other) side of the chest is already in the list
                                 if (leftSideLocation.distance(roundedLocation) < 1) {
@@ -359,7 +365,6 @@ public class SchematicHandler {
                                         locations.add(roundedLocation);
                                         containers.addTag(new BlockTag(Material.CHEST, location.subtract(minLoc)));
                                     }
-
                                 } else if (rightSideLocation.distance(roundedLocation) < 1) {
                                     if (SchematicLocationUtils.isNotAlreadyIn(locations, leftSideLocation)) {
                                         locations.add(roundedLocation);
@@ -391,6 +396,7 @@ public class SchematicHandler {
 
     /**
      * Replace the blocks according to the 'replacement_blocks' section.
+     *
      * <p>Note: This is to be used by compiled schematics. Non compiled schematics are replaced in
      * the {@link #getContainersAndSignsLocations(Clipboard, Location, double, Structure)} method to save time.</p>
      *
@@ -426,7 +432,7 @@ public class SchematicHandler {
      * Get the location of containers and signs.
      * <p>This will also replace blocks from the replacement_blocks section.</p>
      *
-     * @param clipboard     The worldedit clipboard
+     * @param clipboard     The WorldEdit clipboard
      * @param pasteLocation The location of the paste
      * @param rotation      The rotate value (in degrees).
      * @return The list of locations
@@ -451,19 +457,21 @@ public class SchematicHandler {
                         if (blockState instanceof Chest) {
                             InventoryHolder holder = ((Chest) blockState).getInventory().getHolder();
                             if (holder instanceof DoubleChest doubleChest) {
-                                Location leftSideLocation = ((Chest) doubleChest.getLeftSide()).getLocation();
-                                Location rightSideLocation = ((Chest) doubleChest.getRightSide()).getLocation();
+                                Location leftSideLocation = ((Chest) Objects.requireNonNull(doubleChest.getLeftSide(), "left side")).getLocation();
+                                Location rightSideLocation = ((Chest) Objects.requireNonNull(doubleChest.getRightSide(), "right side")).getLocation();
 
-                                Location roundedLocation = new Location(location.getWorld(),
-                                    Math.floor(location.getX()), Math.floor(location.getY()),
-                                    Math.floor(location.getZ()));
+                                Location roundedLocation = new Location(
+                                    location.getWorld(),
+                                    Math.floor(location.getX()),
+                                    Math.floor(location.getY()),
+                                    Math.floor(location.getZ())
+                                );
 
                                 // Check to see if this (or the other) side of the chest is already in the list
                                 if (leftSideLocation.distance(roundedLocation) < 1) {
                                     if (SchematicLocationUtils.isNotAlreadyIn(locations, rightSideLocation)) {
                                         locations.add(roundedLocation);
                                     }
-
                                 } else if (rightSideLocation.distance(roundedLocation) < 1) {
                                     if (SchematicLocationUtils.isNotAlreadyIn(locations, leftSideLocation)) {
                                         locations.add(roundedLocation);
