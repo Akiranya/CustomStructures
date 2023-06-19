@@ -250,7 +250,7 @@ public class CustomStructures extends JavaPlugin {
             version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         } catch (ArrayIndexOutOfBoundsException ex) {
             getLogger().severe("Unable to detect Minecraft version! The plugin will now be disabled.");
-            getPluginLoader().disablePlugin(this);
+            enabled = false;
             return;
         }
 
