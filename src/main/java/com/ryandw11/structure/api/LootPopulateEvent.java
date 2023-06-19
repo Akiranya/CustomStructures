@@ -21,14 +21,13 @@ import org.jetbrains.annotations.Nullable;
  * that is, {@link com.ryandw11.structure.lootchest.LootChestTag#shouldRefill(org.bukkit.entity.Player)} returns true.
  */
 public class LootPopulateEvent extends Event implements Cancellable {
-
     private static final HandlerList handlers = new HandlerList();
 
-    @Nullable private final Player player;
-    @NotNull private final Structure structure;
-    @NotNull private final Container container;
-    @NotNull private final LootTable lootTable;
-    @NotNull private final LootChestTag lootChestTag;
+    private final @Nullable Player player;
+    private final @NotNull Structure structure;
+    private final @NotNull Container container;
+    private final @NotNull LootTable lootTable;
+    private final @NotNull LootChestTag lootChestTag;
     private boolean canceled;
 
     /**
@@ -41,11 +40,12 @@ public class LootPopulateEvent extends Event implements Cancellable {
      * @param lootChestTag the loot chest tags stored in this container
      */
     public LootPopulateEvent(
-            @Nullable Player player,
-            @NotNull Structure structure,
-            @NotNull Container container,
-            @NotNull LootTable lootTable,
-            @NotNull LootChestTag lootChestTag) {
+        @Nullable Player player,
+        @NotNull Structure structure,
+        @NotNull Container container,
+        @NotNull LootTable lootTable,
+        @NotNull LootChestTag lootChestTag
+    ) {
         this.player = player;
         this.structure = structure;
         this.lootTable = lootTable;
@@ -118,7 +118,7 @@ public class LootPopulateEvent extends Event implements Cancellable {
     /**
      * @deprecated Use {@link #setCancelled(boolean)}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public void setCanceled(boolean canceled) {
         this.canceled = canceled;
     }
@@ -126,7 +126,7 @@ public class LootPopulateEvent extends Event implements Cancellable {
     /**
      * @deprecated Use {@link #isCancelled()}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public boolean isCanceled() {
         return canceled;
     }
@@ -139,5 +139,4 @@ public class LootPopulateEvent extends Event implements Cancellable {
     public static HandlerList getHandlerList() {
         return handlers;
     }
-
 }

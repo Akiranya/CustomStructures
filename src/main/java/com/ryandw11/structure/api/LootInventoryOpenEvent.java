@@ -14,23 +14,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 /**
- * Represents an event which is called when a player opens (i.e. typically right-clicks) a loot container that belongs
- * to a custom structure. Cancelling this event will only prevent the player opening the loot container, but it does NOT
- * prevent the container from generating loots or refilling. If you wanted to cancel the loot generation, cancel the
- * events {@link com.ryandw11.structure.api.LootInventoryRefillEvent} or
+ * This event is called when a player opens (i.e. typically right-clicks) a loot container that belongs to a custom
+ * structure. Cancelling this event will only prevent the player opening the loot container, but it does NOT prevent the
+ * container from generating loots or refilling. If you wanted to cancel the loot generation, see
+ * {@link com.ryandw11.structure.api.LootInventoryRefillEvent} and
  * {@link com.ryandw11.structure.api.LootPopulateEvent}.
  * <p>
  * Listeners may use this event to modify the loot contents of the container.
  */
-@SuppressWarnings("unused")
 public class LootInventoryOpenEvent extends PlayerEvent implements Cancellable {
-
     private static final HandlerList HANDLERS = new HandlerList();
 
-    @NotNull private final Structure structure;
-    @NotNull private final Container container;
-    @NotNull private final LootChestTag lootChestTag;
-    @Nullable private final LootTable lootTable;
+    private final @NotNull Structure structure;
+    private final @NotNull Container container;
+    private final @NotNull LootChestTag lootChestTag;
+    private final @Nullable LootTable lootTable;
     private boolean cancel = false;
 
     /**
@@ -41,11 +39,12 @@ public class LootInventoryOpenEvent extends PlayerEvent implements Cancellable {
      *                  one is set
      */
     public LootInventoryOpenEvent(
-            @NotNull Player who,
-            @NotNull Structure structure,
-            @NotNull Container container,
-            @NotNull LootChestTag lootChestTag,
-            @Nullable LootTable lootTable) {
+        @NotNull Player who,
+        @NotNull Structure structure,
+        @NotNull Container container,
+        @NotNull LootChestTag lootChestTag,
+        @Nullable LootTable lootTable
+    ) {
         super(who);
         this.structure = structure;
         this.container = container;
@@ -100,5 +99,4 @@ public class LootInventoryOpenEvent extends PlayerEvent implements Cancellable {
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
-
 }

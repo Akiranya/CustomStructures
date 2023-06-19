@@ -14,27 +14,19 @@ public final class LootChestTagType implements PersistentDataType<String, LootCh
 
     public static final LootChestTagType INSTANCE = new LootChestTagType();
 
-    @NotNull
-    @Override
-    public Class<String> getPrimitiveType() {
+    @Override public @NotNull Class<String> getPrimitiveType() {
         return String.class;
     }
 
-    @NotNull
-    @Override
-    public Class<LootChestTag> getComplexType() {
+    @Override public @NotNull Class<LootChestTag> getComplexType() {
         return LootChestTag.class;
     }
 
-    @NotNull
-    @Override
-    public String toPrimitive(@NotNull LootChestTag complex, @NotNull PersistentDataAdapterContext context) {
+    @Override public @NotNull String toPrimitive(@NotNull LootChestTag complex, @NotNull PersistentDataAdapterContext context) {
         return GSON.toJson(complex);
     }
 
-    @NotNull
-    @Override
-    public LootChestTag fromPrimitive(@NotNull String primitive, @NotNull PersistentDataAdapterContext context) {
+    @Override public @NotNull LootChestTag fromPrimitive(@NotNull String primitive, @NotNull PersistentDataAdapterContext context) {
         return GSON.fromJson(primitive, LootChestTagImpl.class);
     }
 

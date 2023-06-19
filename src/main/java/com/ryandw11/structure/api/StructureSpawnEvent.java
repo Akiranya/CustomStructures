@@ -17,7 +17,6 @@ import java.util.List;
  * <p>It is not possible to cancel this event.</p>
  */
 public class StructureSpawnEvent extends Event {
-
     private static final HandlerList handlers = new HandlerList();
 
     private final Structure structure;
@@ -105,9 +104,7 @@ public class StructureSpawnEvent extends Event {
         return holder.getContainersAndSignsLocations();
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
+    @Override public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 
