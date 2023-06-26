@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class LootContentPlacer {
 
     /**
-     * Put loot items sparsely in the chest.
+     * Put loot items sparsely in an inventory.
      *
      * @param items     the loot items
      * @param inventory the inventory of the chest
@@ -33,7 +33,7 @@ public final class LootContentPlacer {
     }
 
     /**
-     * Put loot items sparsely in the chest.
+     * Put loot items sparsely in a chest.
      *
      * @param items     the loot items
      * @param inventory the inventory of the chest
@@ -46,19 +46,23 @@ public final class LootContentPlacer {
                 int attemptCount = 0;
 
                 // This while-loop attempts to add a loot item x1 in a random slot:
-                //      If selected slot is AIR, then set the AIR to be the loot item
-                //      If selected slot already has the loot item, then increase the amount by 1
+                //   If selected slot is AIR, then simply set the AIR to be the loot item
+                //   If selected slot already has the loot item, then increase the amount by 1
+                //   If selected slot has some other item else, the loot item x1 will be skipped (not adding to the inventory)
                 while (attemptCount++ <= inventory.getSize()) {
                     int randomPos = ThreadLocalRandom.current().nextInt(inventory.getSize());
                     ItemStack randomPosItem = inventory.getItem(randomPos);
                     if (randomPosItem != null) {
                         if (isSameItem(randomPosItem, lootItem) && randomPosItem.getAmount() < lootItem.getMaxStackSize()) {
+                            // Add 1 to the amount of the existing loot item
                             ItemStack lootItemCopy = lootItem.clone();
                             lootItemCopy.setAmount(randomPosItem.getAmount() + 1);
                             inventory.setItem(randomPos, lootItemCopy);
                             break;
                         }
+                        // The loot item to be added is skipped
                     } else {
+                        // Set air to the loot item
                         ItemStack lootItemCopy = lootItem.clone();
                         lootItemCopy.setAmount(1);
                         inventory.setItem(randomPos, lootItemCopy);
@@ -92,7 +96,7 @@ public final class LootContentPlacer {
     }
 
     /**
-     * Replace the content of the furnace (or smoker) with loot table items.
+     * Replace the content of a furnace (or smoker) with the loot table items.
      *
      * @param items     the loot items to populate the furnace with
      * @param inventory the inventory of the furnace
